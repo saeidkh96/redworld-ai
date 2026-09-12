@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="800">
+</p>
+
 # RedWorld AI
 
 RedWorld AI is an autonomous AI society and economy simulation platform.
