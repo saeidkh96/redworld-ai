@@ -1,0 +1,13 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: redworld-api
+    ports:
+      - "8000:8000"
+    environment:
+      REDWORLD_ENVIRONMENT: development
+      REDWORLD_DEBUG: "true"
+      REDWORLD_WORLD_NAME: Genesis
+      REDWORLD_RANDOM_SEED: "42"
