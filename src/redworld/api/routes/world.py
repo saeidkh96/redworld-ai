@@ -8,7 +8,6 @@ from redworld.simulation.engine import SimulationEngine
 from redworld.simulation.world_state import WorldState
 
 router = APIRouter(prefix="/world", tags=["world"])
-
 EngineDependency = Annotated[SimulationEngine, Depends(get_engine)]
 
 
@@ -21,6 +20,13 @@ def _summary(world: WorldState) -> WorldSummaryResponse:
         banks=len(world.banks),
         has_government=world.government is not None,
         currency=world.economy.currency,
+        ledger_entries=world.ledger.audit_entry_count(),
+        events=len(world.events.events),
+        household_cash=str(world.economy.total_household_cash.amount),
+        business_cash=str(world.economy.total_business_cash.amount),
+        bank_cash=str(world.economy.total_bank_cash.amount),
+        government_cash=str(world.economy.government_cash.amount),
+        unemployment_rate=world.economy.unemployment_rate,
     )
 
 
@@ -33,8 +39,4 @@ def get_world(engine: EngineDependency) -> WorldSummaryResponse:
 def step_world(engine: EngineDependency) -> SimulationStepResponse:
     world = engine.step()
     summary = _summary(world)
-
-    return SimulationStepResponse(
-        **summary.model_dump(),
-        stepped=True,
-    )
+    return SimulationStepResponse(**summary.model_dump(), stepped=True)

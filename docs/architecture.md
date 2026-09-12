@@ -1,139 +1,32 @@
 # RedWorld AI Architecture
 
-## Architectural style
+## Goal
+RedWorld is a living society/economy simulation platform. The architecture is deliberately
+modular so domains such as housing, healthcare, education, justice, geography or energy can
+be added later without making the simulation engine or existing domains own their logic.
 
-RedWorld AI begins as a **modular monolith**.
+## Rules
+1. No domain owns the whole world.
+2. Domain behavior stays independent of FastAPI and infrastructure vendors.
+3. Cross-domain facts are recorded as domain events.
+4. Financial state changes flow through the double-entry ledger.
+5. SimulationEngine orchestrates phases; it does not contain domain-specific models.
+6. New modules should expose narrow services/contracts and tests.
 
-This is deliberate:
+## Current modules
+- accounting — accounts, journal entries, ledger and audit invariants
+- employment — contracts and payroll construction
+- businesses — production and consumption transactions
+- banking — reserve-backed loans and repayments
+- government — taxation and welfare
+- economy — derived world metrics
+- simulation — world state, genesis factory and deterministic lifecycle
+- API — read/step interface only
 
-- one deployable application keeps early development manageable;
-- domain boundaries stay explicit;
-- modules communicate through stable Python interfaces;
-- infrastructure can evolve without rewriting the simulation core;
-- modules can later be extracted into services if scale requires it.
+## Extension pattern
+A future `healthcare` domain can subscribe to citizen/world state, emit events such as
+`TreatmentProvided`, and post financial transactions through accounting without embedding
+health rules in Citizen, Government or SimulationEngine internals.
 
-## Core layers
-
-### Domain
-
-Pure business and simulation concepts.
-
-Initial entities:
-
-- Citizen
-- Business
-- Bank
-- Government
-- Economy
-
-Value objects:
-
-- Money
-
-The domain layer should not depend on FastAPI, databases, message brokers, LLM vendors,
-or UI frameworks.
-
-### Simulation
-
-Owns world state and deterministic progression of simulation time.
-
-Initial responsibilities:
-
-- create world state;
-- maintain the simulation tick;
-- advance the world.
-
-Future responsibilities:
-
-- event queue;
-- schedules;
-- action execution;
-- economic clearing;
-- policy application;
-- agent lifecycle;
-- deterministic replay.
-
-### Application
-
-Planned layer for use cases coordinating domain behavior.
-
-Examples:
-
-- hire citizen;
-- pay salary;
-- open account;
-- issue loan;
-- create business;
-- collect tax;
-- purchase goods.
-
-### Infrastructure
-
-Planned adapters:
-
-- PostgreSQL
-- Redis
-- event streaming
-- vector / memory stores
-- LLM providers
-- observability
-- external APIs
-
-### API
-
-FastAPI is the first external interface.
-
-The API must orchestrate the application, not contain economic rules.
-
-## Extensibility principle
-
-New capabilities should be introduced behind interfaces and domain services. No future
-feature should require direct modification of unrelated modules merely to participate in
-the world.
-
-Potential future modules include:
-
-- labor market
-- firms and production
-- accounting
-- commercial banking
-- central banking
-- credit
-- taxation
-- welfare
-- housing
-- education
-- healthcare
-- demographics
-- logistics
-- contracts
-- courts
-- politics
-- media
-- social networks
-- agent cognition
-- memory and learning
-
-## Finance direction
-
-Finance is an operating system for the simulated economy, not a trading subsystem.
-
-Important future concepts:
-
-- household balances
-- business balance sheets
-- bank deposits
-- lending
-- interest
-- credit risk
-- cash flow
-- payroll
-- invoices
-- taxes
-- public spending
-- budgets
-- accounting ledgers
-- insolvency
-- capital formation
-
-Trading is not a core objective.
+The same pattern applies to housing, education, justice, transport, energy, climate,
+politics, media and other future world systems.

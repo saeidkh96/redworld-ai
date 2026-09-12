@@ -1,96 +1,81 @@
-<p align="center">
-  <img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="800">
-</p>
-
 # RedWorld AI
 
-RedWorld AI is an autonomous AI society and economy simulation platform.
+<p align="center">
+  <img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="900">
+</p>
 
-The long-term vision is a persistent virtual world populated by AI citizens, businesses,
-banks, government institutions, and an evolving economy. Agents will be able to work,
-earn, spend, save, borrow, create businesses, hire, produce, transact, learn, and interact
-inside a governed simulation.
+**SIMULATE → DECIDE → INTERACT → EVOLVE**
 
-> Current status: `v0.0.1` foundation only. Features are considered complete only after
-> they are implemented and validated by tests.
+RedWorld AI is an autonomous society and economy simulation platform. `v0.1.0` establishes
+its first deterministic closed economy and the modular financial foundation future AI agents
+will inhabit.
 
-## v0.0.1 scope
+## What v0.1.0 includes
 
-This first version establishes:
+- modular domain architecture
+- double-entry accounting ledger and audit trail
+- citizens and employment contracts
+- payroll and citizen income
+- businesses, production, inventory and consumption
+- reserve-backed bank loans and repayments
+- government taxation, treasury and welfare spending
+- economic aggregates and unemployment metrics
+- domain event history
+- deterministic world ticks
+- FastAPI world endpoints
+- automated tests, Ruff, mypy, Docker and CI
 
-- modular project structure
-- typed economic domain models
-- money value object
-- world state container
-- deterministic simulation clock
-- basic world creation
-- FastAPI health/world endpoints
-- configuration management
-- automated tests
-- Docker support
-- GitHub Actions CI
+The project deliberately does **not** claim autonomous LLM citizens yet. The next major line
+will add decision-making, memory and richer world systems on top of this validated economy.
 
-It intentionally does **not** claim autonomous agents, LLM reasoning, banking operations,
-markets, taxation, accounting, employment, production, or learning yet.
+## Architecture
 
-## Architecture direction
+```text
+src/redworld/
+├── core/                 # cross-domain primitives/events
+├── domain/entities/      # core actors
+├── domains/
+│   ├── accounting/
+│   ├── employment/
+│   ├── businesses/
+│   ├── banking/
+│   ├── government/
+│   └── economy/
+├── simulation/           # world state + orchestration
+└── api/                  # external interface
+```
 
-RedWorld AI starts as a modular monolith with explicit domain boundaries. This keeps the
-core understandable while allowing future modules to be extracted into services if scale
-or deployment requirements justify it.
-
-Core domains:
-
-- Citizens
-- Businesses
-- Banking
-- Government
-- Economy
-- Simulation Engine
-
-Future capabilities should depend on stable interfaces rather than directly coupling to
-implementation details.
+New world systems should be added as separate domains and integrate through events, services
+and ledger transactions instead of rewriting unrelated modules.
 
 ## Quick start
 
-```bash
-python -m venv .venv
+```powershell
+py -3.14 -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+python -m pytest
+python -m ruff check .
+python -m mypy src
 ```
 
-Windows PowerShell:
+Run the API:
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
+python -m uvicorn redworld.api.main:app --reload
 ```
 
-Install:
+Endpoints:
+- `GET /api/v1/health`
+- `GET /api/v1/world`
+- `POST /api/v1/world/step`
+- Swagger: `http://127.0.0.1:8000/docs`
 
-```bash
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
-```
+## License
+RedWorld AI is source-available software, not OSI open-source software. Non-commercial use
+is permitted subject to the root `LICENSE`; commercial use requires separate permission.
 
-Run tests:
-
-```bash
-pytest
-```
-
-Run API:
-
-```bash
-uvicorn redworld.api.main:app --reload
-```
-
-Open:
-
-- API: http://127.0.0.1:8000
-- Docs: http://127.0.0.1:8000/docs
-- Health: http://127.0.0.1:8000/api/v1/health
-- World: http://127.0.0.1:8000/api/v1/world
-
-## Versioning
-
-RedWorld AI follows semantic versioning during development.
-
-Current target: `v0.0.1`
+## Current version
+`v0.1.0 — First Closed Economy`

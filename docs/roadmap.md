@@ -1,86 +1,62 @@
 # RedWorld AI Roadmap
 
-This roadmap is provisional. A milestone is completed only when its implementation and
-validation criteria are satisfied.
+A milestone is considered complete only when its behavior is implemented and validated.
+The architecture remains modular so future domains can be added without rewriting the core.
 
-## v0.0.1 — Foundation
+## v0.0.1 — Foundation ✅
+Project packaging, entities, Money, WorldState, SimulationEngine, API, tests, Docker, CI.
 
-- project packaging
-- modular domain structure
-- core institution entities
-- money value object
-- world state
-- simulation tick
-- genesis world factory
-- API health/world endpoints
-- unit/integration tests
-- Docker
-- CI
+## v0.0.2 — Economic Ledger ✅
+- double-entry accounts, postings and journal entries
+- balanced-entry invariant
+- account-type-aware balances
+- immutable audit trail
+- trial balance validation
 
-## v0.0.2 — Economic Ledger
-
-Planned:
-
-- double-entry ledger foundation
-- accounts
-- postings
-- transaction invariants
-- household/business/government/bank account types
-- audit trail
-
-## v0.0.3 — Citizens & Employment
-
-Planned:
-
-- citizen lifecycle
+## v0.0.3 — Citizens & Employment ✅
 - employment contracts
-- salaries
-- payroll
-- income
-- expenses
-- basic needs
+- hiring state
+- deterministic payroll
+- citizen income and consumption accounts
+- unemployment metric
 
-## v0.0.4 — Businesses
+## v0.0.4 — Businesses ✅
+- business operating accounts
+- employee-driven production
+- inventory
+- citizen purchases
+- revenue and wage expense accounting
 
-Planned:
+## v0.0.5 — Banking ✅
+- bank-hosted deposit registration
+- reserve-backed lending
+- loan entity and credit constraint
+- monthly interest accrual and scheduled principal calculation
+- principal repayment lifecycle
+- bank balance-sheet summary
+- bank reserve movements
 
-- business creation
-- capital
-- employees
-- operating expenses
-- revenue
-- simple production
-- profit/loss
+## v0.0.6 — Government & Fiscal System ✅
+- configurable income and business taxation
+- treasury and tax revenue accounts
+- welfare/public spending
+- fiscal events
 
-## v0.0.5 — Banking
+## v0.1.0 — First Closed Economy ✅
+A deterministic closed economy now executes a complete tick:
 
-Planned:
+1. businesses produce
+2. employers pay wages
+3. government collects income tax
+4. citizens consume from businesses
+5. government supports unemployed citizens
+6. economic aggregates refresh
+7. the audit/event history records the world transition
 
-- deposits
-- transfers
-- loans
-- interest
-- repayment schedules
-- bank balance sheet
-- basic credit constraints
+The genesis world contains citizens, one business, one bank, one government and seeded
+monetary balances. The accounting ledger remains balanced across simulation ticks.
 
-## v0.0.6 — Government & Fiscal System
-
-Planned:
-
-- taxation
-- treasury
-- government spending
-- public budget
-- policy parameters
-
-## v0.1.0 — First Closed Economy
-
-Target:
-
-A validated small economy where citizens can work, earn, spend, save, businesses can
-hire and operate, banks can hold deposits and lend, and government can collect taxes and
-spend.
-
-Later milestones will add autonomous cognition, memory, learning, social interaction,
-richer markets, institutions, observability, persistence, distributed execution, and UI.
+## Next major line — v0.2.x
+World expansion and autonomous behavior: needs, goals, decisions, social interactions,
+agent memory, richer businesses, markets, housing, geography and institutions. New domains
+must integrate through stable contracts/events rather than modifying unrelated domain logic.

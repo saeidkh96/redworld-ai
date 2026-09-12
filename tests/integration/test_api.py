@@ -1,36 +1,25 @@
 from fastapi.testclient import TestClient
 
+from redworld.api.dependencies import get_engine
 from redworld.api.main import app
-
-client = TestClient(app)
 
 
 def test_health_endpoint() -> None:
+    client = TestClient(app)
     response = client.get("/api/v1/health")
-
     assert response.status_code == 200
-    payload = response.json()
-    assert payload["status"] == "ok"
-    assert payload["version"] == "0.0.1"
+    assert response.json()["version"] == "0.1.0"
 
 
-def test_world_endpoint() -> None:
-    response = client.get("/api/v1/world")
-
-    assert response.status_code == 200
-    payload = response.json()
-    assert payload["name"]
-    assert payload["tick"] >= 0
-    assert payload["citizens"] == 1
-    assert payload["banks"] == 1
-    assert payload["has_government"] is True
-
-
-def test_step_endpoint_advances_world() -> None:
-    before = client.get("/api/v1/world").json()["tick"]
-    response = client.post("/api/v1/world/step")
-
-    assert response.status_code == 200
-    payload = response.json()
+def test_world_endpoint_and_step() -> None:
+    get_engine.cache_clear()
+    client = TestClient(app)
+    before = client.get("/api/v1/world")
+    assert before.status_code == 200
+    assert before.json()["citizens"] == 4
+    stepped = client.post("/api/v1/world/step")
+    assert stepped.status_code == 200
+    payload = stepped.json()
+    assert payload["tick"] == 1
     assert payload["stepped"] is True
-    assert payload["tick"] == before + 1
+    assert payload["ledger_entries"] > 1

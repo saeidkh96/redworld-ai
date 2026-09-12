@@ -15,6 +15,13 @@ class WorldSummaryResponse(BaseModel):
     banks: int
     has_government: bool
     currency: str
+    ledger_entries: int
+    events: int
+    household_cash: str
+    business_cash: str
+    bank_cash: str
+    government_cash: str
+    unemployment_rate: float
 
 
 class SimulationStepResponse(WorldSummaryResponse):
