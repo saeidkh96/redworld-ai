@@ -1546,7 +1546,12 @@ function renderMetrics(){
   document.getElementById("metrics").innerHTML=items.map(([l,v])=>`<div class="metric"><b>${v}</b><span>${l}</span></div>`).join("");
   document.getElementById("worldTime").textContent=`${s.time.toUpperCase()} • TICK ${s.tick}`;document.getElementById("overlayPopulation").textContent=formatNumber(s.population);document.getElementById("cinemaTime").textContent=s.time.toUpperCase();document.title=`RedWorld AI — ${s.time}`;
 }
-async function loadCitizens(){const response=await fetch("/api/v1/world/citizens?limit=200");const data=await response.json();citizens=data.items;renderCitizenOptions(citizens);}
+async function loadCitizens() {
+  const response = await fetch("/api/v1/world/citizens?limit=2000");
+  const data = await response.json();
+  citizens = data.items;
+  renderCitizenOptions(citizens);
+}
 function renderCitizenOptions(list){const el=document.getElementById("citizenSelect");el.innerHTML='<option value="">Select a citizen...</option>'+list.map(c=>`<option value="${c.id}">${c.name} — ${c.occupation}</option>`).join("");}
 function focusCitizenOnMap(agent) {
   if (!agent || !snapshot) return;

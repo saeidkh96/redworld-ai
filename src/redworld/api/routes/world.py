@@ -42,7 +42,7 @@ def get_map(
 @router.get("/citizens")
 def list_citizens(
     engine: EngineDependency,
-    limit: int = Query(50, ge=1, le=200),
+    limit: int = Query(50, ge=1, le=5000),
     offset: int = Query(0, ge=0),
 ) -> dict[str, object]:
     citizens = list(engine.world.citizens.values())
