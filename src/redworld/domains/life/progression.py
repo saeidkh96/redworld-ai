@@ -35,14 +35,31 @@ class CitizenProgressionService:
         physical = 1.0 - citizen.needs.health
         profile.skill = clamp(profile.skill + (0.0008 if citizen.employed else 0.00025))
         profile.education = clamp(profile.education + 0.00015 * citizen.traits.discipline)
-        profile.stress = clamp(profile.stress + 0.008 * employed - 0.012 * social_health - 0.008 * citizen.traits.resilience)
+        profile.stress = clamp(
+            profile.stress
+            + 0.008 * employed
+            - 0.012 * social_health
+            - 0.008 * citizen.traits.resilience
+        )
         profile.physical_health = clamp(0.85 * profile.physical_health + 0.15 * physical)
-        profile.mental_health = clamp(profile.mental_health + 0.006 * social_health - 0.009 * profile.stress)
+        profile.mental_health = clamp(
+            profile.mental_health + 0.006 * social_health - 0.009 * profile.stress
+        )
         profile.belonging = clamp(profile.belonging + 0.006 * social_health)
         profile.reputation = clamp(profile.reputation + 0.001 * citizen.traits.discipline)
-        profile.autonomy = clamp(0.55 * profile.autonomy + 0.45 * (0.35 + 0.35 * employed + 0.30 * profile.skill))
-        profile.happiness = clamp(0.28 * physical + 0.22 * profile.mental_health + 0.20 * profile.belonging + 0.15 * profile.autonomy + 0.15 * (1.0 - profile.stress))
-        profile.life_satisfaction = clamp(0.65 * profile.life_satisfaction + 0.35 * profile.happiness)
+        profile.autonomy = clamp(
+            0.55 * profile.autonomy + 0.45 * (0.35 + 0.35 * employed + 0.30 * profile.skill)
+        )
+        profile.happiness = clamp(
+            0.28 * physical
+            + 0.22 * profile.mental_health
+            + 0.20 * profile.belonging
+            + 0.15 * profile.autonomy
+            + 0.15 * (1.0 - profile.stress)
+        )
+        profile.life_satisfaction = clamp(
+            0.65 * profile.life_satisfaction + 0.35 * profile.happiness
+        )
 
     def yearly_update(self, citizen: Citizen, profile: CitizenLifeProfile) -> None:
         citizen.age += 1

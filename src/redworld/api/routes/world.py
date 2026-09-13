@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from uuid import UUID
 import asyncio
 from typing import Annotated
 
@@ -76,7 +75,7 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
     citizen = engine.world.citizens.get(citizen_id)
     if citizen is None:
         raise HTTPException(status_code=404, detail="citizen not found")
-    
+
     location = engine.world.geography.locations.get(citizen.current_location_id or "")
     cash = (
         None
@@ -115,13 +114,21 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
             for memory in engine.world.memories.recent(citizen.id)
         ],
         "relationships": len(engine.world.society.for_citizen(citizen.id)),
-        "life": None if profile is None else {
-            "education": round(profile.education, 3), "skill": round(profile.skill, 3),
-            "happiness": round(profile.happiness, 3), "stress": round(profile.stress, 3),
-            "physical_health": round(profile.physical_health, 3), "mental_health": round(profile.mental_health, 3),
-            "belonging": round(profile.belonging, 3), "civic_trust": round(profile.civic_trust, 3),
-            "culture": round(profile.culture, 3), "environmental_awareness": round(profile.environmental_awareness, 3),
-            "reputation": round(profile.reputation, 3), "autonomy": round(profile.autonomy, 3),
+        "life": None
+        if profile is None
+        else {
+            "education": round(profile.education, 3),
+            "skill": round(profile.skill, 3),
+            "happiness": round(profile.happiness, 3),
+            "stress": round(profile.stress, 3),
+            "physical_health": round(profile.physical_health, 3),
+            "mental_health": round(profile.mental_health, 3),
+            "belonging": round(profile.belonging, 3),
+            "civic_trust": round(profile.civic_trust, 3),
+            "culture": round(profile.culture, 3),
+            "environmental_awareness": round(profile.environmental_awareness, 3),
+            "reputation": round(profile.reputation, 3),
+            "autonomy": round(profile.autonomy, 3),
             "life_satisfaction": round(profile.life_satisfaction, 3),
         },
     }
@@ -138,9 +145,31 @@ def get_autonomous_society(engine: EngineDependency) -> dict[str, object]:
         "collective_agency": round(state.collective_agency, 3),
         "polarization": round(state.polarization, 3),
         "decisions_made": state.decisions_made,
-        "institutions": [{"id": key, "name": i.name, "kind": i.kind.value, "trust": round(i.trust, 3), "legitimacy": round(i.legitimacy, 3), "participation": round(i.participation, 3)} for key, i in state.institutions.items()],
-        "groups": [{"id": key, "name": g.name, "members": len(g.member_ids), "cohesion": round(g.cohesion, 3), "influence": round(g.influence, 3)} for key, g in state.groups.items()],
-        "norms": [{"name": n.name, "strength": round(n.strength, 3), "compliance": round(n.compliance, 3)} for n in state.norms.values()],
+        "institutions": [
+            {
+                "id": key,
+                "name": i.name,
+                "kind": i.kind.value,
+                "trust": round(i.trust, 3),
+                "legitimacy": round(i.legitimacy, 3),
+                "participation": round(i.participation, 3),
+            }
+            for key, i in state.institutions.items()
+        ],
+        "groups": [
+            {
+                "id": key,
+                "name": g.name,
+                "members": len(g.member_ids),
+                "cohesion": round(g.cohesion, 3),
+                "influence": round(g.influence, 3),
+            }
+            for key, g in state.groups.items()
+        ],
+        "norms": [
+            {"name": n.name, "strength": round(n.strength, 3), "compliance": round(n.compliance, 3)}
+            for n in state.norms.values()
+        ],
     }
 
 

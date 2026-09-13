@@ -10,8 +10,8 @@ from redworld.domains.commerce import CommerceService
 from redworld.domains.employment.service import EmploymentService
 from redworld.domains.geography import GeographyService
 from redworld.domains.households import Household
-from redworld.domains.memory import MemoryService
 from redworld.domains.life.progression import CitizenLifeProfile
+from redworld.domains.memory import MemoryService
 from redworld.domains.planning import PlanningService
 from redworld.domains.society import SocialGraph
 from redworld.domains.time import WorldClock

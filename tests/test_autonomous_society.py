@@ -1,5 +1,5 @@
-from redworld.simulation.factory import create_world
 from redworld.simulation.engine import SimulationEngine
+from redworld.simulation.factory import create_world
 
 
 def test_autonomous_society_bootstraps_and_profiles_exist() -> None:
@@ -17,5 +17,12 @@ def test_autonomous_society_metrics_are_bounded() -> None:
     engine = SimulationEngine(world)
     engine.run(100)
     state = world.autonomous_society
-    for value in (state.public_mood, state.social_cohesion, state.civic_participation, state.institutional_trust, state.collective_agency, state.polarization):
+    for value in (
+        state.public_mood,
+        state.social_cohesion,
+        state.civic_participation,
+        state.institutional_trust,
+        state.collective_agency,
+        state.polarization,
+    ):
         assert 0.0 <= value <= 1.0

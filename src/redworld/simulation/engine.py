@@ -3,13 +3,13 @@ from dataclasses import dataclass
 from redworld.core.events import DomainEvent
 from redworld.domain.value_objects.money import Money
 from redworld.domains.actions import ActionService
-from redworld.domains.businesses import BusinessService
 from redworld.domains.autonomy import AutonomousSocietyService
+from redworld.domains.businesses import BusinessService
 from redworld.domains.decisions import DecisionService
 from redworld.domains.economy import refresh_economy_metrics
 from redworld.domains.government import GovernmentService
-from redworld.domains.life.service import LifeService
 from redworld.domains.life.progression import CitizenLifeProfile, CitizenProgressionService
+from redworld.domains.life.service import LifeService
 from redworld.domains.mobility import MobilityService
 from redworld.simulation.world_state import WorldState
 
@@ -90,8 +90,10 @@ class SimulationEngine:
                 if self.world.clock.day == 1 and self.world.clock.month == 1:
                     progression.yearly_update(citizen, self.world.life_profiles[str(citizen.id)])
             autonomy.daily_update(
-                tick=tick, state=self.world.autonomous_society,
-                citizens=list(self.world.citizens.values()), profiles=self.world.life_profiles,
+                tick=tick,
+                state=self.world.autonomous_society,
+                citizens=list(self.world.citizens.values()),
+                profiles=self.world.life_profiles,
                 events=self.world.events,
             )
         refresh_economy_metrics(self.world)
