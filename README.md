@@ -22,7 +22,7 @@ The project combines a spatial city with citizens, households, businesses, banki
 
 `v1.1.0 — Citizen Life / Autonomous Society` extends the Living City with human development, community dynamics, evolving norms, civic institutions, collective agency and autonomous society-level behavior.
 
-## Living City v1.0.0
+## RedWorld AI v1.1.0
 
 The current world supports:
 
@@ -220,7 +220,7 @@ Current validated development build:
 ```text
 39 tests passed
 Ruff: All checks passed
-mypy: Success — 73 source files
+mypy: Success — 77 source files
 ```
 
 ### Run
@@ -248,13 +248,14 @@ http://127.0.0.1:8000/viewer
 | `v0.7.0` | Physical Commerce | Complete |
 | `v0.8.0` | Memory & Learning Foundation | Complete |
 | `v0.9.0` | Goals & Planning Foundation | Complete |
-| `v1.0.0` | Living City | Current |
+| `v1.0.0` | Living City | Complete |
+| `v1.1.0` | Citizen Life / Autonomous Society | Current |
 
 Detailed release notes are available under `docs/releases/`.
 
-## Beyond v1.0
+## Beyond v1.1
 
-`v1.0.0` is the first integrated Living City milestone, not the end of RedWorld.
+`v1.1.0` extends the integrated Living City into Citizen Life and Autonomous Society, but it is still only one stage in RedWorld's evolution.
 
 The architecture is intended to grow toward deeper citizen intelligence, richer families and organizations, education, healthcare, politics and institutions, media and culture, crime and public safety, resources and energy, environmental systems, migration, multiple cities, inter-city economies, and agentic/LLM reasoning.
 
@@ -291,4 +292,8 @@ Non-commercial use is permitted subject to the root `LICENSE`. Commercial use re
 <p align="center">
   <strong>RedWorld AI</strong><br>
   SIMULATE · BUILD · DECIDE · EVOLVE
+</p>
+
+<p align="center">
+  Created and developed by <strong>Saeid Khalilian</strong>
 </p>
