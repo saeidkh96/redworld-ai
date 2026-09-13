@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from uuid import UUID
 import asyncio
 from typing import Annotated
 
