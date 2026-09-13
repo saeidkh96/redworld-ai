@@ -61,3 +61,35 @@ The Genesis City runtime now integrates time, needs, decisions, actions, mobilit
 
 ### Beyond v1.0
 Future lines can deepen rather than replace the foundation: LLM/agentic reasoning, culture/media/politics, education, healthcare, crime/policing, energy/resources, migration, multiple cities, environment/climate and large-scale institutional experiments.
+
+## v1.1.0 — Citizen Life ✅
+- education, skills and lifelong progression
+- happiness, stress, physical/mental health and life satisfaction
+- belonging, civic trust, culture and environmental awareness
+- reputation, autonomy and individual agency
+- deterministic daily/yearly progression and aging
+
+## v1.2.0 — Human Development ✅
+- skill/education growth tied to discipline and employment
+- resilience-aware stress and health feedback
+- long-horizon experience accumulation
+
+## v1.3.0 — Community & Culture ✅
+- persistent community groups
+- belonging-driven cohesion and influence
+- shared social norms and compliance dynamics
+
+## v1.4.0 — Civic Institutions ✅
+- civic council, public forum, learning commons and neighborhood assembly
+- institutional trust, participation and legitimacy
+- citizen civic trust feeding institutional dynamics
+
+## v1.5.0 — Collective Behavior ✅
+- public mood and social cohesion
+- civic participation, polarization and collective agency
+- autonomous norm reinforcement and community influence
+
+## v2.0.0 scope — Autonomous Society ✅
+The Autonomous Society capability line is integrated into the v1.1.0 release package. Society-level state now emerges deterministically from citizen life: institutions evolve, norms strengthen or weaken, community groups develop cohesion and influence, public mood and trust move with citizen well-being, and sufficiently participatory societies can produce collective decisions without direct scripted intervention.
+
+The world remains authoritative: collective behavior can produce events and proposals, but no autonomous actor bypasses world-owned validation or the accounting/geography invariants.

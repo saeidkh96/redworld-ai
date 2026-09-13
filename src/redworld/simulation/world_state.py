@@ -4,12 +4,14 @@ from uuid import UUID
 from redworld.core.events import EventStore
 from redworld.domain.entities import Bank, Business, Citizen, Economy, Government
 from redworld.domains.accounting.ledger import Ledger
+from redworld.domains.autonomy import SocietyState
 from redworld.domains.banking.service import BankingService
 from redworld.domains.commerce import CommerceService
 from redworld.domains.employment.service import EmploymentService
 from redworld.domains.geography import GeographyService
 from redworld.domains.households import Household
 from redworld.domains.memory import MemoryService
+from redworld.domains.life.progression import CitizenLifeProfile
 from redworld.domains.planning import PlanningService
 from redworld.domains.society import SocialGraph
 from redworld.domains.time import WorldClock
@@ -37,3 +39,5 @@ class WorldState:
     commerce: CommerceService = field(default_factory=CommerceService)
     memories: MemoryService = field(default_factory=MemoryService)
     planning: PlanningService = field(default_factory=PlanningService)
+    life_profiles: dict[str, CitizenLifeProfile] = field(default_factory=dict)
+    autonomous_society: SocietyState = field(default_factory=SocietyState)

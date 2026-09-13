@@ -4,10 +4,12 @@ from redworld.core.events import DomainEvent
 from redworld.domain.value_objects.money import Money
 from redworld.domains.actions import ActionService
 from redworld.domains.businesses import BusinessService
+from redworld.domains.autonomy import AutonomousSocietyService
 from redworld.domains.decisions import DecisionService
 from redworld.domains.economy import refresh_economy_metrics
 from redworld.domains.government import GovernmentService
 from redworld.domains.life.service import LifeService
+from redworld.domains.life.progression import CitizenLifeProfile, CitizenProgressionService
 from redworld.domains.mobility import MobilityService
 from redworld.simulation.world_state import WorldState
 
@@ -32,6 +34,11 @@ class SimulationEngine:
         decision_service = DecisionService()
         mobility = MobilityService()
         businesses = list(self.world.businesses.values())
+        progression = CitizenProgressionService()
+        autonomy = AutonomousSocietyService()
+        autonomy.bootstrap(self.world.autonomous_society, list(self.world.citizens.values()))
+        for citizen in self.world.citizens.values():
+            self.world.life_profiles.setdefault(str(citizen.id), CitizenLifeProfile())
         self.world.commerce.restock(day=self.world.clock.day, businesses=businesses)
         if tick % 4 == 0:
             for business in businesses:
@@ -77,6 +84,16 @@ class SimulationEngine:
         if tick % 16 == 0:
             for citizen in self.world.citizens.values():
                 self.world.planning.update(citizen)
+        if self.world.clock.minute_of_day == 0:
+            for citizen in self.world.citizens.values():
+                progression.daily_update(citizen, self.world.life_profiles[str(citizen.id)])
+                if self.world.clock.day == 1 and self.world.clock.month == 1:
+                    progression.yearly_update(citizen, self.world.life_profiles[str(citizen.id)])
+            autonomy.daily_update(
+                tick=tick, state=self.world.autonomous_society,
+                citizens=list(self.world.citizens.values()), profiles=self.world.life_profiles,
+                events=self.world.events,
+            )
         refresh_economy_metrics(self.world)
         self.world.events.append(
             DomainEvent(

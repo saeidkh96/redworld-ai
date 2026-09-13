@@ -20,7 +20,7 @@
 
 The project combines a spatial city with citizens, households, businesses, banking, government, social relationships, physical commerce, memory, goals, and an accounting-backed economy. The world itself remains the source of truth: citizens and future AI agents can propose actions, but all actions are validated and executed by world systems.
 
-`v1.0.0 — Living City` brings the original closed economy together with the first integrated living-world simulation.
+`v1.1.0 — Citizen Life / Autonomous Society` extends the Living City with human development, community dynamics, evolving norms, civic institutions, collective agency and autonomous society-level behavior.
 
 ## Living City v1.0.0
 
@@ -40,6 +40,8 @@ The current world supports:
 - **Double-entry accounting ledger** as the financial source of truth
 - **Bounded episodic memory** for citizens
 - **Goals and progress evaluation**
+- **Citizen Life** with education, skills, happiness, stress, health, belonging, civic trust, reputation, autonomy and aging
+- **Autonomous Society** with communities, evolving norms, institutions, public mood, cohesion, participation, polarization and collective decisions
 - **Genesis City viewer** with live world and citizen state
 - **FastAPI + WebSocket APIs** for simulation and visualization
 - **Seeded world generation** for reproducible experiments
@@ -178,6 +180,7 @@ GET  /api/v1/world
 GET  /api/v1/world/map
 GET  /api/v1/world/citizens
 GET  /api/v1/world/citizens/{citizen_id}
+GET  /api/v1/world/society
 POST /api/v1/world/step
 WS   /api/v1/world/live
 ```
@@ -215,7 +218,7 @@ python -m mypy src
 Current validated development build:
 
 ```text
-37 tests passed
+39 tests passed
 Ruff: All checks passed
 mypy: Success — 73 source files
 ```
