@@ -61,5 +61,9 @@ class Ledger:
                     credit += posting.amount.amount
         return Money(debit - credit, self.currency)
 
+    def total_balance(self) -> Decimal:
+        """Compatibility helper for world-level balance invariants."""
+        return self.trial_balance_delta().amount
+
     def audit_entry_count(self) -> int:
         return len(self.entries)

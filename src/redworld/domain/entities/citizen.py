@@ -3,6 +3,7 @@ from decimal import Decimal
 from uuid import UUID, uuid4
 
 from redworld.domain.value_objects.money import Money
+from redworld.domains.life.models import CitizenNeeds, CitizenTraits, DailySchedule
 
 
 @dataclass(slots=True)
@@ -20,3 +21,21 @@ class Citizen:
     tax_expense_account_id: UUID | None = None
     consumption_need_units: Decimal = Decimal("1")
     last_consumption_tick: int | None = None
+    age: int = 30
+    occupation: str = "Resident"
+    home_location_id: str | None = None
+    work_location_id: str | None = None
+    current_location_id: str | None = None
+    destination_location_id: str | None = None
+    travel_path: list[str] = field(default_factory=list)
+    needs: CitizenNeeds = field(default_factory=CitizenNeeds)
+    traits: CitizenTraits = field(default_factory=CitizenTraits)
+    schedule: DailySchedule = field(default_factory=DailySchedule)
+    current_action: str = "idle"
+    action_target_location_id: str | None = None
+    last_action_tick: int = 0
+    household_id: UUID | None = None
+
+    @property
+    def is_moving(self) -> bool:
+        return bool(self.travel_path)

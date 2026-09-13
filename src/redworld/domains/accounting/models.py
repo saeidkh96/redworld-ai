@@ -53,14 +53,10 @@ class JournalEntry:
         if len(currencies) != 1:
             raise ValueError("journal entry postings must use one currency")
         debit_total = sum(
-            posting.amount.amount
-            for posting in self.postings
-            if posting.side is PostingSide.DEBIT
+            posting.amount.amount for posting in self.postings if posting.side is PostingSide.DEBIT
         )
         credit_total = sum(
-            posting.amount.amount
-            for posting in self.postings
-            if posting.side is PostingSide.CREDIT
+            posting.amount.amount for posting in self.postings if posting.side is PostingSide.CREDIT
         )
         if debit_total != credit_total:
             raise ValueError("journal entry is not balanced")

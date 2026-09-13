@@ -21,3 +21,4 @@ class Business:
     productivity_per_employee: Decimal = Decimal("4")
     inventory_units: Decimal = Decimal("0")
     total_units_sold: Decimal = Decimal("0")
+    location_id: str | None = None

@@ -1,4 +1,3 @@
-
 from redworld.core.events import DomainEvent, EventStore
 from redworld.domain.entities.citizen import Citizen
 from redworld.domain.entities.government import Government
@@ -27,16 +26,18 @@ class GovernmentService:
         tax = raw.min(available)
         if tax.amount <= 0:
             return Money.zero(ledger.currency)
-        ledger.post(JournalEntry(
-            tick=tick,
-            description=f"Income tax: {citizen.name}",
-            postings=(
-                Posting(government.treasury_account_id, PostingSide.DEBIT, tax),
-                Posting(government.tax_revenue_account_id, PostingSide.CREDIT, tax),
-                Posting(citizen.tax_expense_account_id, PostingSide.DEBIT, tax),
-                Posting(citizen.cash_account_id, PostingSide.CREDIT, tax),
-            ),
-        ))
+        ledger.post(
+            JournalEntry(
+                tick=tick,
+                description=f"Income tax: {citizen.name}",
+                postings=(
+                    Posting(government.treasury_account_id, PostingSide.DEBIT, tax),
+                    Posting(government.tax_revenue_account_id, PostingSide.CREDIT, tax),
+                    Posting(citizen.tax_expense_account_id, PostingSide.DEBIT, tax),
+                    Posting(citizen.cash_account_id, PostingSide.CREDIT, tax),
+                ),
+            )
+        )
         events.append(
             DomainEvent(
                 "TaxCollected",
@@ -45,7 +46,6 @@ class GovernmentService:
             )
         )
         return tax
-
 
     def collect_business_tax(
         self,
@@ -110,16 +110,18 @@ class GovernmentService:
         payment = government.welfare_payment.min(available)
         if payment.amount <= 0:
             return Money.zero(ledger.currency)
-        ledger.post(JournalEntry(
-            tick=tick,
-            description=f"Welfare: {citizen.name}",
-            postings=(
-                Posting(government.spending_expense_account_id, PostingSide.DEBIT, payment),
-                Posting(government.treasury_account_id, PostingSide.CREDIT, payment),
-                Posting(citizen.cash_account_id, PostingSide.DEBIT, payment),
-                Posting(citizen.income_account_id, PostingSide.CREDIT, payment),
-            ),
-        ))
+        ledger.post(
+            JournalEntry(
+                tick=tick,
+                description=f"Welfare: {citizen.name}",
+                postings=(
+                    Posting(government.spending_expense_account_id, PostingSide.DEBIT, payment),
+                    Posting(government.treasury_account_id, PostingSide.CREDIT, payment),
+                    Posting(citizen.cash_account_id, PostingSide.DEBIT, payment),
+                    Posting(citizen.income_account_id, PostingSide.CREDIT, payment),
+                ),
+            )
+        )
         events.append(
             DomainEvent(
                 "WelfarePaid",

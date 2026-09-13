@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#071019" />
+  <title>RedWorld AI — Genesis City</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand"><span class="red">Red</span>World <span class="ai">AI</span></div>
+        <div class="city-label">GENESIS CITY • LIVE WORLD</div>
+      </div>
+      <div class="world-clock">
+        <span class="status-dot"></span>
+        <div>
+          <strong id="worldTime">DAY 001 • 06:00 • TICK 0</strong>
+          <small>SIMULATE · BUILD · DECIDE · EVOLVE</small>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="cinemaBtn" class="ghost" title="Hide interface for recording">▣ CINEMA</button>
+        <button id="stepBtn" class="ghost">+1 TICK</button>
+        <button id="liveBtn" class="primary">▶ LIVE</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="world-stage" id="worldStage">
+        <canvas id="worldCanvas"></canvas>
+        <div class="map-vignette"></div>
+
+        <div class="city-title-card">
+          <span class="eyebrow">AUTONOMOUS AI SOCIETY</span>
+          <h1>Genesis City</h1>
+          <p><span id="overlayPopulation">1,500</span> simulated citizens · one persistent world</p>
+          <div class="title-meta"><span>● LIVE ECONOMY</span><span>● SPATIAL SIMULATION</span><span>● AGENT SOCIETY</span></div>
+        </div>
+
+        <div class="cinema-badge" id="cinemaBadge">
+          <span>REDWORLD AI</span>
+          <b>GENESIS CITY</b>
+          <small id="cinemaTime">DAY 001 · 06:00</small>
+        </div>
+
+        <div class="map-tools">
+          <button id="zoomIn" title="Zoom in">＋</button>
+          <button id="zoomOut" title="Zoom out">−</button>
+          <button id="resetView" title="Reset camera">⌂</button>
+        </div>
+
+        <div class="layer-bar">
+          <span class="layer-label">LAYERS</span>
+          <button class="layer active" data-layer="buildings">Buildings</button>
+          <button class="layer active" data-layer="people">People</button>
+          <button class="layer active" data-layer="traffic">Traffic</button>
+          <button class="layer" data-layer="economy">Economy</button>
+          <button class="layer" data-layer="services">Services</button>
+        </div>
+
+        <div class="map-footer">
+          <div class="map-legend">
+            <span><i class="legend-person"></i> simulated citizens</span>
+            <span><i class="legend-selected"></i> selected citizen</span>
+            <span><i class="legend-road"></i> live mobility</span>
+          </div>
+          <div class="camera-help">Drag to pan · Scroll to zoom · Click a citizen to inspect</div>
+        </div>
+      </section>
+
+      <aside class="sidebar" id="sidebar">
+        <section class="panel overview-panel">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow">LIVE WORLD STATE</span>
+              <h2>Genesis City</h2>
+            </div>
+            <span class="live-pill">● ONLINE</span>
+          </div>
+          <div class="metrics" id="metrics"></div>
+        </section>
+
+        <section class="panel citizen-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="eyebrow">AGENT PROFILE</span>
+              <h2>Citizen Inspector</h2>
+            </div>
+          </div>
+          <div class="search-wrap">
+            <span>⌕</span>
+            <input id="search" placeholder="Search citizen or occupation..." />
+          </div>
+          <select id="citizenSelect"></select>
+          <div id="citizenDetail" class="citizen empty-state">
+            Select a citizen to follow their life in the city.
+          </div>
+        </section>
+
+        <section class="panel events-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="eyebrow">WORLD ACTIVITY</span>
+              <h2>Recent Events</h2>
+            </div>
+            <span id="eventCount" class="counter">0</span>
+          </div>
+          <div id="events" class="events"></div>
+        </section>
+
+        <section class="panel performance-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="eyebrow">SYSTEM PERFORMANCE</span>
+              <h2>Viewer Runtime</h2>
+            </div>
+            <span class="perf-health">100</span>
+          </div>
+          <div class="perf-grid">
+            <div><small>FPS</small><b id="perfFps">30</b></div>
+            <div><small>Render</small><b id="perfRender">0 ms</b></div>
+            <div><small>WS latency</small><b id="perfWs">—</b></div>
+          </div>
+          <div class="perf-line"><span id="perfLine"></span></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+  <script src="/static/city_engine.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

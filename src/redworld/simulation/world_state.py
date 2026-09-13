@@ -5,7 +5,14 @@ from redworld.core.events import EventStore
 from redworld.domain.entities import Bank, Business, Citizen, Economy, Government
 from redworld.domains.accounting.ledger import Ledger
 from redworld.domains.banking.service import BankingService
+from redworld.domains.commerce import CommerceService
 from redworld.domains.employment.service import EmploymentService
+from redworld.domains.geography import GeographyService
+from redworld.domains.households import Household
+from redworld.domains.memory import MemoryService
+from redworld.domains.planning import PlanningService
+from redworld.domains.society import SocialGraph
+from redworld.domains.time import WorldClock
 
 
 @dataclass(slots=True)
@@ -22,3 +29,11 @@ class WorldState:
     banking: BankingService = field(default_factory=BankingService)
     events: EventStore = field(default_factory=EventStore)
     system_issuance_account_id: UUID | None = None
+    seed: int = 20260912
+    geography: GeographyService = field(default_factory=GeographyService)
+    clock: WorldClock = field(default_factory=WorldClock)
+    households: dict[str, Household] = field(default_factory=dict)
+    society: SocialGraph = field(default_factory=SocialGraph)
+    commerce: CommerceService = field(default_factory=CommerceService)
+    memories: MemoryService = field(default_factory=MemoryService)
+    planning: PlanningService = field(default_factory=PlanningService)

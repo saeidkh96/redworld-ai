@@ -1,62 +1,63 @@
 # RedWorld AI Roadmap
 
-A milestone is considered complete only when its behavior is implemented and validated.
-The architecture remains modular so future domains can be added without rewriting the core.
+A milestone is considered complete only when its behavior is implemented and validated. The world remains modular: no domain owns the whole simulation, the financial ledger remains the source of truth for money, geography owns spatial topology, and citizen actions are validated through world-owned services.
 
-## v0.0.1 — Foundation ✅
-Project packaging, entities, Money, WorldState, SimulationEngine, API, tests, Docker, CI.
+## Foundation line ✅
+- v0.0.1 — Foundation
+- v0.0.2 — Economic Ledger
+- v0.0.3 — Citizens & Employment
+- v0.0.4 — Businesses
+- v0.0.5 — Banking
+- v0.0.6 — Government & Fiscal System
+- v0.1.0 — First Closed Economy
+- v0.1.x — Genesis City geography, viewer, dense/green city rendering and performance passes
 
-## v0.0.2 — Economic Ledger ✅
-- double-entry accounts, postings and journal entries
-- balanced-entry invariant
-- account-type-aware balances
-- immutable audit trail
-- trial balance validation
+## v0.2.0 — Living World Foundation ✅
+- calendar-aware world clock
+- normalized citizen needs
+- action proposals and validated action execution
+- deterministic, scalable decision cadence
 
-## v0.0.3 — Citizens & Employment ✅
-- employment contracts
-- hiring state
-- deterministic payroll
-- citizen income and consumption accounts
-- unemployment metric
+## v0.3.0 — Living Citizens ✅
+- individual traits
+- daily schedules
+- deterministic decision policy
+- citizen action/activity state exposed through API
 
-## v0.0.4 — Businesses ✅
-- business operating accounts
-- employee-driven production
-- inventory
-- citizen purchases
-- revenue and wage expense accounting
+## v0.4.0 — Daily Life & Mobility ✅
+- action-driven movement over the real geography graph
+- home/work/market/park/hospital destinations
+- staggered decisions and route execution
 
-## v0.0.5 — Banking ✅
-- bank-hosted deposit registration
-- reserve-backed lending
-- loan entity and credit constraint
-- monthly interest accrual and scheduled principal calculation
-- principal repayment lifecycle
-- bank balance-sheet summary
-- bank reserve movements
+## v0.5.0 — Housing & Households ✅
+- deterministic small-household generation
+- household membership on citizens
+- household social ties
 
-## v0.0.6 — Government & Fiscal System ✅
-- configurable income and business taxation
-- treasury and tax revenue accounts
-- welfare/public spending
-- fiscal events
+## v0.6.0 — Society ✅
+- sparse social graph
+- neighbor, coworker and household relationships
+- relationship reinforcement through social activity
 
-## v0.1.0 — First Closed Economy ✅
-A deterministic closed economy now executes a complete tick:
+## v0.7.0 — Physical Economy ✅
+- food market state
+- inventory-backed consumption
+- real ledger settlement for citizen purchases
+- production/restocking cadence
+- daily payroll connected to the closed-economy ledger
 
-1. businesses produce
-2. employers pay wages
-3. government collects income tax
-4. citizens consume from businesses
-5. government supports unemployed citizens
-6. economic aggregates refresh
-7. the audit/event history records the world transition
+## v0.8.0 — Memory & Learning ✅
+- bounded episodic citizen memory
+- meaningful purchase/social/health memories
+- bounded storage for scalability
 
-The genesis world contains citizens, one business, one bank, one government and seeded
-monetary balances. The accounting ledger remains balanced across simulation ticks.
+## v0.9.0 — Goals & Planning ✅
+- health, financial, social and career goals
+- periodic goal-progress evaluation
+- goals exposed through citizen API
 
-## Next major line — v0.2.x
-World expansion and autonomous behavior: needs, goals, decisions, social interactions,
-agent memory, richer businesses, markets, housing, geography and institutions. New domains
-must integrate through stable contracts/events rather than modifying unrelated domain logic.
+## v1.0.0 — Living City ✅ (development integration)
+The Genesis City runtime now integrates time, needs, decisions, actions, mobility, households, society, physical commerce, bounded memory and goals into one deterministic simulation loop for 1,500+ citizens.
+
+### Beyond v1.0
+Future lines can deepen rather than replace the foundation: LLM/agentic reasoning, culture/media/politics, education, healthcare, crime/policing, energy/resources, migration, multiple cities, environment/climate and large-scale institutional experiments.

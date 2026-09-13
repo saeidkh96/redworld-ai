@@ -16,3 +16,4 @@ class Government:
     income_tax_rate: Decimal = Decimal("0.10")
     business_tax_rate: Decimal = Decimal("0.08")
     welfare_payment: Money = field(default_factory=lambda: Money.of("5.00"))
+    location_id: str | None = None

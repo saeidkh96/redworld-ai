@@ -13,3 +13,4 @@ class Bank:
     cash_account_id: UUID | None = None
     interest_revenue_account_id: UUID | None = None
     max_loan_to_reserves_ratio: Decimal = Decimal("0.50")
+    location_id: str | None = None
