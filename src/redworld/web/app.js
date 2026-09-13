@@ -1542,7 +1542,7 @@ function animate(time){
 
 function formatNumber(v){return Number(v||0).toLocaleString();}
 function renderMetrics(){
-  const s=snapshot.summary;const unemployment=Number(s.unemployment_rate||0)*100;const items=[["Population",formatNumber(s.population)],["Employed",formatNumber(s.employed)],["Moving now",formatNumber(s.moving)],["Businesses",formatNumber(s.businesses)],["Unemployment",`${unemployment.toFixed(1)}%`],["World tick",formatNumber(s.tick)]];
+  const s=snapshot.summary;const unemployment=Number(s.unemployment_rate||0)*100;const civ=s.living_civilization||{};const items=[["Population",formatNumber(s.population)],["Employed",formatNumber(s.employed)],["Businesses",formatNumber(s.businesses)],["Unemployment",`${unemployment.toFixed(1)}%`],["Development",`${Math.round(Number(civ.development_level||0)*100)}%`],["Stability",`${Math.round(Number(civ.stability||0)*100)}%`],["Prosperity",`${Math.round(Number(civ.prosperity||0)*100)}%`],["World tick",formatNumber(s.tick)]];
   document.getElementById("metrics").innerHTML=items.map(([l,v])=>`<div class="metric"><b>${v}</b><span>${l}</span></div>`).join("");
   document.getElementById("worldTime").textContent=`${s.time.toUpperCase()} • TICK ${s.tick}`;document.getElementById("overlayPopulation").textContent=formatNumber(s.population);document.getElementById("cinemaTime").textContent=s.time.toUpperCase();document.title=`RedWorld AI — ${s.time}`;
 }

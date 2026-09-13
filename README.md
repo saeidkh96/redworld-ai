@@ -20,9 +20,9 @@
 
 The project combines a spatial city with citizens, households, businesses, banking, government, social relationships, physical commerce, memory, goals, and an accounting-backed economy. The world itself remains the source of truth: citizens and future AI agents can propose actions, but all actions are validated and executed by world systems.
 
-`v1.2.0 — Human Development → Autonomous Society` deepens the Living City with life stages, learning and career progression, health and burnout dynamics, community culture, civic institutions, collective movements, development indices and bounded autonomous civic decisions.
+`v1.2.1 — Living Civilization` integrates the full post-autonomous-society roadmap: generations, careers and mobility, dynamic economy, politics, social dynamics, city evolution, crises, causal history and adaptive world intelligence.
 
-## RedWorld AI v1.2.0
+## RedWorld AI v1.2.1
 
 The current world supports:
 
@@ -250,13 +250,16 @@ http://127.0.0.1:8000/viewer
 | `v0.9.0` | Goals & Planning Foundation | Complete |
 | `v1.0.0` | Living City | Complete |
 | `v1.1.0` | Citizen Life / Autonomous Society | Complete |
-| `v1.2.0` | Human Development → Autonomous Society | Current |
+| `v1.2.0` | Human Development → Autonomous Society | Complete |
+| `v1.2.1` | Living Civilization | Current |
 
 Detailed release notes are available under `docs/releases/`.
 
-## Beyond v1.2
+## Living Civilization v1.2.1
 
-`v1.2.0` consolidates the Human Development through Autonomous Society capability line into one integrated release, while keeping RedWorld open for substantially larger future world systems.
+`v1.2.1` consolidates the planned v1.2.1 → v1.3.0 Living Civilization capability line into one integrated release/tag. The simulation now tracks demographic transitions, careers and social mobility, dynamic macroeconomics, elections and policy, social pressure, city development, crises, causal history and adaptive civilization strategy.
+
+The scope remains extensible: future releases can expand these systems into richer multi-city, regional and world-scale simulations without replacing the current foundations.
 
 The architecture is intended to grow toward deeper citizen intelligence, richer families and organizations, education, healthcare, politics and institutions, media and culture, crime and public safety, resources and energy, environmental systems, migration, multiple cities, inter-city economies, and agentic/LLM reasoning.
 

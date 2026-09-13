@@ -125,9 +125,7 @@ class CitizenProgressionService:
         old_stage = profile.life_stage
         citizen.age += 1
         profile.life_stage = self.stage_for_age(citizen.age)
-        profile.physical_health = clamp(
-            profile.physical_health - max(0, citizen.age - 55) * 0.0005
-        )
+        profile.physical_health = clamp(profile.physical_health - max(0, citizen.age - 55) * 0.0005)
         profile.skill = clamp(profile.skill - max(0, citizen.age - 70) * 0.0004)
         event_year = year if year is not None else citizen.age
         if profile.life_stage != old_stage:

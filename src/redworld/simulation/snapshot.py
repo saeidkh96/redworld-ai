@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.2.0",
+        "version": "1.2.1",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
@@ -31,6 +31,18 @@ def world_summary(world: WorldState) -> dict[str, object]:
         "households": len(world.households),
         "relationships": len(world.society.relationships),
         "market_food_units": str(world.commerce.market.food_units),
+        "living_civilization": {
+            "development_level": round(world.civilization.development_level, 3),
+            "stability": round(world.civilization.stability, 3),
+            "prosperity": round(world.civilization.prosperity, 3),
+            "resilience": round(world.civilization.resilience, 3),
+            "price_index": round(world.civilization.economy.price_index, 3),
+            "inflation_rate": round(world.civilization.economy.inflation_rate, 3),
+            "governance_approval": round(world.civilization.governance.approval, 3),
+            "active_crises": len(world.civilization.crises.active),
+            "history_events": len(world.civilization.history.records),
+            "strategy": world.civilization.intelligence.strategy,
+        },
         "autonomous_society": {
             "public_mood": round(world.autonomous_society.public_mood, 3),
             "social_cohesion": round(world.autonomous_society.social_cohesion, 3),
@@ -196,4 +208,127 @@ def live_snapshot(
             {"name": event.event_type, "tick": event.tick, "payload": event.payload}
             for event in recent_events
         ],
+    }
+
+
+def civilization_snapshot(world: WorldState) -> dict[str, object]:
+    state = world.civilization
+    return {
+        "development_level": round(state.development_level, 3),
+        "stability": round(state.stability, 3),
+        "prosperity": round(state.prosperity, 3),
+        "resilience": round(state.resilience, 3),
+        "demography": {
+            "resident_population": state.demography.resident_population,
+            "births": state.demography.births,
+            "deaths": state.demography.deaths,
+            "marriages": state.demography.marriages,
+            "separations": state.demography.separations,
+            "households_formed": state.demography.households_formed,
+            "generation": state.demography.generation,
+            "fertility_rate": round(state.demography.fertility_rate, 4),
+            "mortality_rate": round(state.demography.mortality_rate, 4),
+            "median_age": round(state.demography.median_age, 2),
+            "dependency_ratio": round(state.demography.dependency_ratio, 3),
+        },
+        "careers": {
+            "promotions": state.careers.promotions,
+            "job_changes": state.careers.job_changes,
+            "layoffs": state.careers.layoffs,
+            "hires": state.careers.hires,
+            "mobility_index": round(state.careers.mobility_index, 3),
+            "average_skill": round(state.careers.average_skill, 3),
+            "wage_index": round(state.careers.wage_index, 3),
+            "career_ladder": {
+                key: round(value, 3) for key, value in state.careers.career_ladder.items()
+            },
+            "class_distribution": {
+                key.value: round(value, 3)
+                for key, value in state.careers.class_distribution.items()
+            },
+        },
+        "economy": {
+            "price_index": round(state.economy.price_index, 4),
+            "inflation_rate": round(state.economy.inflation_rate, 4),
+            "demand_index": round(state.economy.demand_index, 3),
+            "supply_index": round(state.economy.supply_index, 3),
+            "poverty_rate": round(state.economy.poverty_rate, 3),
+            "wealth_concentration": round(state.economy.wealth_concentration, 3),
+            "business_births": state.economy.business_births,
+            "business_failures": state.economy.business_failures,
+            "productivity_index": round(state.economy.productivity_index, 3),
+            "confidence_index": round(state.economy.confidence_index, 3),
+        },
+        "governance": {
+            "approval": round(state.governance.approval, 3),
+            "months_to_election": state.governance.months_to_election,
+            "elections_held": state.governance.elections_held,
+            "governing_bloc": state.governance.governing_bloc,
+            "opposition_bloc": state.governance.opposition_bloc,
+            "seats": dict(state.governance.seats),
+            "public_budget_index": round(state.governance.public_budget_index, 3),
+            "policy_effectiveness": round(state.governance.policy_effectiveness, 3),
+            "policies": [
+                {
+                    "year": policy.year,
+                    "month": policy.month,
+                    "name": policy.name,
+                    "area": policy.area,
+                    "support": round(policy.support, 3),
+                    "active": policy.active,
+                }
+                for policy in state.governance.policies[-20:]
+            ],
+        },
+        "social_dynamics": {
+            "cooperation": round(state.social.cooperation, 3),
+            "conflict": round(state.social.conflict, 3),
+            "protest_pressure": round(state.social.protest_pressure, 3),
+            "opinion_diversity": round(state.social.opinion_diversity, 3),
+            "norm_adaptation": round(state.social.norm_adaptation, 3),
+            "protests": state.social.protests,
+            "civic_campaigns": state.social.civic_campaigns,
+        },
+        "city_evolution": {
+            "infrastructure_index": round(state.city.infrastructure_index, 3),
+            "housing_capacity_index": round(state.city.housing_capacity_index, 3),
+            "public_space_index": round(state.city.public_space_index, 3),
+            "migration_balance": state.city.migration_balance,
+            "construction_projects": state.city.construction_projects,
+            "land_use_changes": state.city.land_use_changes,
+            "developments": [
+                {
+                    "year": development.year,
+                    "month": development.month,
+                    "district_id": development.district_id,
+                    "project": development.project,
+                    "impact": round(development.impact, 3),
+                }
+                for development in state.city.developments[-20:]
+            ],
+        },
+        "crises": {
+            "resilience": round(state.crises.resilience, 3),
+            "resolved": state.crises.resolved,
+            "active": [
+                {
+                    "kind": crisis.kind.value,
+                    "started_year": crisis.started_year,
+                    "started_month": crisis.started_month,
+                    "severity": round(crisis.severity, 3),
+                    "pressure": round(crisis.pressure, 3),
+                    "duration_months": crisis.duration_months,
+                }
+                for crisis in state.crises.active
+            ],
+        },
+        "world_intelligence": {
+            "citizen_adaptation": round(state.intelligence.citizen_adaptation, 3),
+            "institution_adaptation": round(state.intelligence.institution_adaptation, 3),
+            "economic_adaptation": round(state.intelligence.economic_adaptation, 3),
+            "foresight": round(state.intelligence.foresight, 3),
+            "strategy": state.intelligence.strategy,
+            "decisions": state.intelligence.decisions,
+        },
+        "history_count": len(state.history.records),
     }

@@ -79,3 +79,21 @@ This release consolidates the previously planned v1.2–v2.0 capability line und
 - Autonomous Society: development indices, bounded civic decision history and society-level events
 
 The world remains authoritative. Society-level autonomy changes social state through deterministic domain services and explicit events; it does not bypass world validation, geography or accounting invariants.
+
+
+## v1.2.1 — Living Civilization ✅
+This release consolidates the planned `v1.2.1` through `v1.3.0` capability line under the single `v1.2.1` release/tag.
+
+- Living Civilization Foundation: shared long-horizon civilization state and deterministic integration
+- Life & Generations: demographic transitions, aging-linked fertility/mortality, marriage/separation and generation tracking
+- Careers & Social Mobility: promotions, job changes, layoffs/hires, wage index and social-class mobility
+- Dynamic Economy: demand/supply, inflation, prices, poverty, wealth concentration, productivity and confidence
+- Politics & Governance: elections, governing/opposition blocs, approval, public budgets and adaptive policy enactment
+- Social Dynamics: cooperation, conflict, protest pressure, opinion diversity and norm adaptation
+- City Evolution: infrastructure, housing/public-space capacity, district development and land-use change
+- Events & Crises: recession, shortage, epidemic, boom and policy-shock emergence with resilience/recovery
+- History & Causality: bounded historical timeline with causes, effects and significance
+- World Intelligence: citizen, institution and economic adaptation with an explicit civilization strategy
+- Final Integration: API, viewer summary, simulation cadence, tests and release documentation
+
+The world remains authoritative: civilization systems observe and evolve world-owned state through deterministic services and explicit events.

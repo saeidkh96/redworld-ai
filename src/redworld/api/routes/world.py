@@ -8,7 +8,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSock
 from redworld.api.dependencies import get_engine
 from redworld.api.schemas import SimulationStepResponse
 from redworld.simulation.engine import SimulationEngine
-from redworld.simulation.snapshot import live_snapshot, map_snapshot, world_summary
+from redworld.simulation.snapshot import (
+    civilization_snapshot,
+    live_snapshot,
+    map_snapshot,
+    world_summary,
+)
 
 router = APIRouter(prefix="/world", tags=["world"])
 EngineDependency = Annotated[SimulationEngine, Depends(get_engine)]
@@ -139,8 +144,7 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
             "community_influence": round(profile.community_influence, 3),
             "experience_days": profile.experience_days,
             "history": [
-                {"year": e.year, "kind": e.kind, "summary": e.summary}
-                for e in profile.events[-10:]
+                {"year": e.year, "kind": e.kind, "summary": e.summary} for e in profile.events[-10:]
             ],
         },
     }
@@ -206,6 +210,37 @@ def get_autonomous_society(engine: EngineDependency) -> dict[str, object]:
         "norms": [
             {"name": n.name, "strength": round(n.strength, 3), "compliance": round(n.compliance, 3)}
             for n in state.norms.values()
+        ],
+    }
+
+
+@router.get("/civilization")
+def get_living_civilization(engine: EngineDependency) -> dict[str, object]:
+    return civilization_snapshot(engine.world)
+
+
+@router.get("/history")
+def get_world_history(
+    engine: EngineDependency,
+    limit: int = Query(50, ge=1, le=500),
+) -> dict[str, object]:
+    records = engine.world.civilization.history.records[-limit:]
+    return {
+        "total": len(engine.world.civilization.history.records),
+        "items": [
+            {
+                "sequence": record.sequence,
+                "tick": record.tick,
+                "year": record.year,
+                "month": record.month,
+                "category": record.category,
+                "title": record.title,
+                "summary": record.summary,
+                "causes": record.causes,
+                "effects": record.effects,
+                "significance": round(record.significance, 3),
+            }
+            for record in records
         ],
     }
 

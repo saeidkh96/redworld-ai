@@ -5,6 +5,7 @@ from redworld.domain.value_objects.money import Money
 from redworld.domains.actions import ActionService
 from redworld.domains.autonomy import AutonomousSocietyService
 from redworld.domains.businesses import BusinessService
+from redworld.domains.civilization import LivingCivilizationService
 from redworld.domains.decisions import DecisionService
 from redworld.domains.economy import refresh_economy_metrics
 from redworld.domains.government import GovernmentService
@@ -17,6 +18,34 @@ from redworld.simulation.world_state import WorldState
 @dataclass(slots=True)
 class SimulationEngine:
     world: WorldState
+
+    def __post_init__(self) -> None:
+        self._bootstrap_living_world()
+
+    def _bootstrap_living_world(self) -> None:
+        if not self.world.geography.locations:
+            return
+
+        citizens = list(self.world.citizens.values())
+
+        for citizen in citizens:
+            self.world.life_profiles.setdefault(str(citizen.id), CitizenLifeProfile())
+
+        AutonomousSocietyService().bootstrap(
+            self.world.autonomous_society,
+            citizens,
+        )
+
+        LivingCivilizationService().bootstrap(
+            state=self.world.civilization,
+            citizens=citizens,
+            profiles=self.world.life_profiles,
+            society=self.world.autonomous_society,
+            tick=self.world.tick,
+            year=self.world.clock.year,
+            month=self.world.clock.month,
+            events=self.world.events,
+        )
 
     def step(self) -> WorldState:
         if self.world.geography.locations:
@@ -36,9 +65,8 @@ class SimulationEngine:
         businesses = list(self.world.businesses.values())
         progression = CitizenProgressionService()
         autonomy = AutonomousSocietyService()
-        autonomy.bootstrap(self.world.autonomous_society, list(self.world.citizens.values()))
-        for citizen in self.world.citizens.values():
-            self.world.life_profiles.setdefault(str(citizen.id), CitizenLifeProfile())
+        civilization = LivingCivilizationService()
+        self._bootstrap_living_world()
         self.world.commerce.restock(day=self.world.clock.day, businesses=businesses)
         if tick % 4 == 0:
             for business in businesses:
@@ -87,7 +115,7 @@ class SimulationEngine:
         if self.world.clock.minute_of_day == 0:
             for citizen in self.world.citizens.values():
                 progression.daily_update(citizen, self.world.life_profiles[str(citizen.id)])
-                if self.world.clock.day == 1 and self.world.clock.month == 1:
+                if self.world.clock.day_of_month == 1 and self.world.clock.month == 1:
                     progression.yearly_update(
                         citizen,
                         self.world.life_profiles[str(citizen.id)],
@@ -100,6 +128,39 @@ class SimulationEngine:
                 profiles=self.world.life_profiles,
                 events=self.world.events,
             )
+            civilization.daily_update(
+                state=self.world.civilization,
+                citizens=list(self.world.citizens.values()),
+                profiles=self.world.life_profiles,
+                society=self.world.autonomous_society,
+                unemployment_rate=self.world.economy.unemployment_rate,
+                tick=tick,
+                year=self.world.clock.year,
+                month=self.world.clock.month,
+                events=self.world.events,
+            )
+            if self.world.clock.day_of_month == 1:
+                civilization.monthly_update(
+                    state=self.world.civilization,
+                    citizens=list(self.world.citizens.values()),
+                    society=self.world.autonomous_society,
+                    unemployment_rate=self.world.economy.unemployment_rate,
+                    district_ids=list(self.world.geography.districts),
+                    tick=tick,
+                    year=self.world.clock.year,
+                    month=self.world.clock.month,
+                    events=self.world.events,
+                )
+            if self.world.clock.day_of_month == 1 and self.world.clock.month == 1:
+                civilization.yearly_update(
+                    state=self.world.civilization,
+                    citizens=list(self.world.citizens.values()),
+                    society=self.world.autonomous_society,
+                    tick=tick,
+                    year=self.world.clock.year,
+                    month=self.world.clock.month,
+                    events=self.world.events,
+                )
         refresh_economy_metrics(self.world)
         self.world.events.append(
             DomainEvent(

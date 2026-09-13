@@ -6,6 +6,7 @@ from redworld.domain.entities import Bank, Business, Citizen, Economy, Governmen
 from redworld.domains.accounting.ledger import Ledger
 from redworld.domains.autonomy import SocietyState
 from redworld.domains.banking.service import BankingService
+from redworld.domains.civilization import CivilizationState
 from redworld.domains.commerce import CommerceService
 from redworld.domains.employment.service import EmploymentService
 from redworld.domains.geography import GeographyService
@@ -41,3 +42,4 @@ class WorldState:
     planning: PlanningService = field(default_factory=PlanningService)
     life_profiles: dict[str, CitizenLifeProfile] = field(default_factory=dict)
     autonomous_society: SocietyState = field(default_factory=SocietyState)
+    civilization: CivilizationState = field(default_factory=CivilizationState)
