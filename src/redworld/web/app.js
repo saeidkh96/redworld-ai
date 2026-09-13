@@ -1654,6 +1654,25 @@ async function showCitizen(id) {
     </div>
 
     <div class="citizen-life">
+      <small>HUMAN DEVELOPMENT</small>
+      <div>
+        Stage: ${c.life?.life_stage?.replaceAll("_", " ") || "—"} ·
+        Education ${Math.round((c.life?.education || 0) * 100)}% ·
+        Skill ${Math.round((c.life?.skill || 0) * 100)}% ·
+        Career ${Math.round((c.life?.career_progress || 0) * 100)}%
+      </div>
+      <div>
+        Happiness ${Math.round((c.life?.happiness || 0) * 100)}% ·
+        Health ${Math.round((c.life?.physical_health || 0) * 100)}% ·
+        Mental ${Math.round((c.life?.mental_health || 0) * 100)}% ·
+        Burnout risk ${Math.round((c.life?.burnout_risk || 0) * 100)}%
+      </div>
+      <div>
+        Belonging ${Math.round((c.life?.belonging || 0) * 100)}% ·
+        Civic ${Math.round((c.life?.civic_engagement || 0) * 100)}% ·
+        Influence ${Math.round((c.life?.community_influence || 0) * 100)}%
+      </div>
+
       <small>GOALS</small>
       <div>
         ${
@@ -1665,6 +1684,16 @@ async function showCitizen(id) {
                 )}%`
             )
             .join(" · ") || "—"
+        }
+      </div>
+
+      <small>LIFE HISTORY</small>
+      <div>
+        ${
+          (c.life?.history || [])
+            .slice(-3)
+            .map((event) => `${event.year}: ${event.summary}`)
+            .join(" · ") || "Life history is still unfolding"
         }
       </div>
 

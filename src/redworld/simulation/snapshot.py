@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.1.0",
+        "version": "1.2.0",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
@@ -41,6 +41,12 @@ def world_summary(world: WorldState) -> dict[str, object]:
             "institutions": len(world.autonomous_society.institutions),
             "community_groups": len(world.autonomous_society.groups),
             "collective_decisions": world.autonomous_society.decisions_made,
+            "education_index": round(world.autonomous_society.education_index, 3),
+            "public_health": round(world.autonomous_society.public_health, 3),
+            "cultural_vitality": round(world.autonomous_society.cultural_vitality, 3),
+            "social_mobility": round(world.autonomous_society.social_mobility, 3),
+            "inequality_pressure": round(world.autonomous_society.inequality_pressure, 3),
+            "movements": len(world.autonomous_society.movements),
         },
     }
 

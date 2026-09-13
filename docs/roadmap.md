@@ -69,27 +69,13 @@ Future lines can deepen rather than replace the foundation: LLM/agentic reasonin
 - reputation, autonomy and individual agency
 - deterministic daily/yearly progression and aging
 
-## v1.2.0 — Human Development ✅
-- skill/education growth tied to discipline and employment
-- resilience-aware stress and health feedback
-- long-horizon experience accumulation
+## v1.2.0 — Human Development → Autonomous Society ✅
+This release consolidates the previously planned v1.2–v2.0 capability line under the single `v1.2.0` tag.
 
-## v1.3.0 — Community & Culture ✅
-- persistent community groups
-- belonging-driven cohesion and influence
-- shared social norms and compliance dynamics
+- Human Development: life stages, learning, skills, career, health, burnout and life history
+- Community & Culture: cultural identity, community cohesion and influence
+- Civic Institutions: trust, legitimacy, participation and institutional capacity
+- Collective Behavior: polarization, inequality pressure and emergent movements
+- Autonomous Society: development indices, bounded civic decision history and society-level events
 
-## v1.4.0 — Civic Institutions ✅
-- civic council, public forum, learning commons and neighborhood assembly
-- institutional trust, participation and legitimacy
-- citizen civic trust feeding institutional dynamics
-
-## v1.5.0 — Collective Behavior ✅
-- public mood and social cohesion
-- civic participation, polarization and collective agency
-- autonomous norm reinforcement and community influence
-
-## v2.0.0 scope — Autonomous Society ✅
-The Autonomous Society capability line is integrated into the v1.1.0 release package. Society-level state now emerges deterministically from citizen life: institutions evolve, norms strengthen or weaken, community groups develop cohesion and influence, public mood and trust move with citizen well-being, and sufficiently participatory societies can produce collective decisions without direct scripted intervention.
-
-The world remains authoritative: collective behavior can produce events and proposals, but no autonomous actor bypasses world-owned validation or the accounting/geography invariants.
+The world remains authoritative. Society-level autonomy changes social state through deterministic domain services and explicit events; it does not bypass world validation, geography or accounting invariants.

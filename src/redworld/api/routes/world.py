@@ -130,6 +130,18 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
             "reputation": round(profile.reputation, 3),
             "autonomy": round(profile.autonomy, 3),
             "life_satisfaction": round(profile.life_satisfaction, 3),
+            "life_stage": profile.life_stage.value,
+            "learning_progress": round(profile.learning_progress, 3),
+            "career_progress": round(profile.career_progress, 3),
+            "burnout_risk": round(profile.burnout_risk, 3),
+            "civic_engagement": round(profile.civic_engagement, 3),
+            "cultural_identity": round(profile.cultural_identity, 3),
+            "community_influence": round(profile.community_influence, 3),
+            "experience_days": profile.experience_days,
+            "history": [
+                {"year": e.year, "kind": e.kind, "summary": e.summary}
+                for e in profile.events[-10:]
+            ],
         },
     }
 
@@ -145,6 +157,11 @@ def get_autonomous_society(engine: EngineDependency) -> dict[str, object]:
         "collective_agency": round(state.collective_agency, 3),
         "polarization": round(state.polarization, 3),
         "decisions_made": state.decisions_made,
+        "education_index": round(state.education_index, 3),
+        "public_health": round(state.public_health, 3),
+        "cultural_vitality": round(state.cultural_vitality, 3),
+        "social_mobility": round(state.social_mobility, 3),
+        "inequality_pressure": round(state.inequality_pressure, 3),
         "institutions": [
             {
                 "id": key,
@@ -153,6 +170,7 @@ def get_autonomous_society(engine: EngineDependency) -> dict[str, object]:
                 "trust": round(i.trust, 3),
                 "legitimacy": round(i.legitimacy, 3),
                 "participation": round(i.participation, 3),
+                "capacity": round(i.capacity, 3),
             }
             for key, i in state.institutions.items()
         ],
@@ -163,8 +181,27 @@ def get_autonomous_society(engine: EngineDependency) -> dict[str, object]:
                 "members": len(g.member_ids),
                 "cohesion": round(g.cohesion, 3),
                 "influence": round(g.influence, 3),
+                "cultural_identity": round(g.cultural_identity, 3),
             }
             for key, g in state.groups.items()
+        ],
+        "movements": [
+            {
+                "name": m.name,
+                "cause": m.cause,
+                "support": round(m.support, 3),
+                "intensity": round(m.intensity, 3),
+            }
+            for m in state.movements.values()
+        ],
+        "decision_history": [
+            {
+                "tick": d.tick,
+                "title": d.title,
+                "support": round(d.support, 3),
+                "enacted": d.enacted,
+            }
+            for d in state.decision_history[-20:]
         ],
         "norms": [
             {"name": n.name, "strength": round(n.strength, 3), "compliance": round(n.compliance, 3)}

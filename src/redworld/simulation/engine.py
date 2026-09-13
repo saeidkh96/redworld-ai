@@ -88,7 +88,11 @@ class SimulationEngine:
             for citizen in self.world.citizens.values():
                 progression.daily_update(citizen, self.world.life_profiles[str(citizen.id)])
                 if self.world.clock.day == 1 and self.world.clock.month == 1:
-                    progression.yearly_update(citizen, self.world.life_profiles[str(citizen.id)])
+                    progression.yearly_update(
+                        citizen,
+                        self.world.life_profiles[str(citizen.id)],
+                        year=self.world.clock.year,
+                    )
             autonomy.daily_update(
                 tick=tick,
                 state=self.world.autonomous_society,

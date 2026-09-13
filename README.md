@@ -20,9 +20,9 @@
 
 The project combines a spatial city with citizens, households, businesses, banking, government, social relationships, physical commerce, memory, goals, and an accounting-backed economy. The world itself remains the source of truth: citizens and future AI agents can propose actions, but all actions are validated and executed by world systems.
 
-`v1.1.0 — Citizen Life / Autonomous Society` extends the Living City with human development, community dynamics, evolving norms, civic institutions, collective agency and autonomous society-level behavior.
+`v1.2.0 — Human Development → Autonomous Society` deepens the Living City with life stages, learning and career progression, health and burnout dynamics, community culture, civic institutions, collective movements, development indices and bounded autonomous civic decisions.
 
-## RedWorld AI v1.1.0
+## RedWorld AI v1.2.0
 
 The current world supports:
 
@@ -218,7 +218,7 @@ python -m mypy src
 Current validated development build:
 
 ```text
-39 tests passed
+41 tests passed
 Ruff: All checks passed
 mypy: Success — 77 source files
 ```
@@ -249,13 +249,14 @@ http://127.0.0.1:8000/viewer
 | `v0.8.0` | Memory & Learning Foundation | Complete |
 | `v0.9.0` | Goals & Planning Foundation | Complete |
 | `v1.0.0` | Living City | Complete |
-| `v1.1.0` | Citizen Life / Autonomous Society | Current |
+| `v1.1.0` | Citizen Life / Autonomous Society | Complete |
+| `v1.2.0` | Human Development → Autonomous Society | Current |
 
 Detailed release notes are available under `docs/releases/`.
 
-## Beyond v1.1
+## Beyond v1.2
 
-`v1.1.0` extends the integrated Living City into Citizen Life and Autonomous Society, but it is still only one stage in RedWorld's evolution.
+`v1.2.0` consolidates the Human Development through Autonomous Society capability line into one integrated release, while keeping RedWorld open for substantially larger future world systems.
 
 The architecture is intended to grow toward deeper citizen intelligence, richer families and organizations, education, healthcare, politics and institutions, media and culture, crime and public safety, resources and energy, environmental systems, migration, multiple cities, inter-city economies, and agentic/LLM reasoning.
 
