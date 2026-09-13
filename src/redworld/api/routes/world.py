@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from uuid import UUID
 import asyncio
 from typing import Annotated
 
@@ -75,7 +76,7 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
     citizen = engine.world.citizens.get(citizen_id)
     if citizen is None:
         raise HTTPException(status_code=404, detail="citizen not found")
-
+    
     location = engine.world.geography.locations.get(citizen.current_location_id or "")
     cash = (
         None

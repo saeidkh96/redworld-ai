@@ -14,6 +14,7 @@ let hoverRaf = 0;
 
 let snapshot = null;
 let selected = null;
+let selectedCitizen = null;
 let socket = null;
 let live = false;
 let citizens = [];
@@ -1228,7 +1229,47 @@ function drawPerson(agent,index){
   ctx.beginPath();ctx.moveTo(0,-1.9*sc);ctx.lineTo(0,2.1*sc);ctx.moveTo(0,-.8*sc);ctx.lineTo(-1.5*sc,.5*sc);ctx.moveTo(0,-.8*sc);ctx.lineTo(1.5*sc,.5*sc);ctx.moveTo(0,2*sc);ctx.lineTo(-1.2*sc,3.9*sc);ctx.moveTo(0,2*sc);ctx.lineTo(1.2*sc,3.9*sc);ctx.stroke();ctx.restore();
   if(selected===agent.id||hoverAgent===agent.id){ctx.save();ctx.strokeStyle=selected===agent.id?"#ff5965":"#7ce2e7";ctx.lineWidth=1.5;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=9;ctx.beginPath();ctx.arc(p.x,p.y-1,8+Math.sin(animationTime*.006)*1.1,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.font="700 8px Segoe UI";ctx.textAlign="center";ctx.fillStyle="#eaf7f7";ctx.fillText(agent.name,p.x,p.y-13);ctx.restore();}
 }
-function drawPeople(){if(!layers.people)return;snapshot.agents.forEach(drawPerson);}
+function selectedAgentForMap() {
+  if (!selected || !selectedCitizen || !snapshot) return null;
+
+  // If the selected citizen is already inside the regular rendered sample,
+  // use that live agent directly.
+  const sampledAgent = snapshot.agents.find(
+    (agent) => agent.id === selected
+  );
+
+  if (sampledAgent) return sampledAgent;
+
+  // The map intentionally renders only a small citizen sample for performance.
+  // Build a temporary visual agent for a selected citizen that is outside
+  // that sample so the user can still locate them on the map.
+  const locationId = selectedCitizen.current_location_id;
+
+  if (!locationId) return null;
+
+  return {
+    id: selectedCitizen.id,
+    name: selectedCitizen.name,
+    location_id: locationId,
+    moving: Boolean(selectedCitizen.moving),
+    action: selectedCitizen.action || "idle",
+  };
+}
+
+function drawPeople() {
+  if (!layers.people) return;
+
+  snapshot.agents.forEach(drawPerson);
+
+  const selectedAgent = selectedAgentForMap();
+
+  if (
+    selectedAgent &&
+    !snapshot.agents.some((agent) => agent.id === selectedAgent.id)
+  ) {
+    drawPerson(selectedAgent, snapshot.agents.length);
+  }
+}
 
 function drawTraffic(){
   if(!layers.traffic)return;
@@ -1507,7 +1548,140 @@ function renderMetrics(){
 }
 async function loadCitizens(){const response=await fetch("/api/v1/world/citizens?limit=200");const data=await response.json();citizens=data.items;renderCitizenOptions(citizens);}
 function renderCitizenOptions(list){const el=document.getElementById("citizenSelect");el.innerHTML='<option value="">Select a citizen...</option>'+list.map(c=>`<option value="${c.id}">${c.name} — ${c.occupation}</option>`).join("");}
-async function showCitizen(id){selected=id||null;document.getElementById("citizenSelect").value=id||"";const detail=document.getElementById("citizenDetail");if(!id){detail.className="citizen empty-state";detail.innerHTML="Select a citizen to follow their life in the city.";return;}const response=await fetch(`/api/v1/world/citizens/${id}`);const c=await response.json();detail.className="citizen";detail.innerHTML=`<span class="agent-tag">AUTONOMOUS CITIZEN</span><strong>${c.name}</strong><br>${c.occupation}<div class="citizen-grid"><div class="citizen-stat"><small>Age</small><b>${c.age}</b></div><div class="citizen-stat"><small>Cash</small><b>${c.cash} RWC</b></div><div class="citizen-stat"><small>Action</small><b>${c.action||"idle"}</b></div><div class="citizen-stat"><small>Location</small><b>${c.current_location||"—"}</b></div><div class="citizen-stat"><small>Hunger</small><b>${Math.round((c.needs?.hunger||0)*100)}%</b></div><div class="citizen-stat"><small>Energy Need</small><b>${Math.round((c.needs?.energy||0)*100)}%</b></div><div class="citizen-stat"><small>Social Need</small><b>${Math.round((c.needs?.social||0)*100)}%</b></div><div class="citizen-stat"><small>Relations</small><b>${c.relationships||0}</b></div></div><div class="citizen-life"><small>GOALS</small><div>${(c.goals||[]).map(g=>`${g.type.replaceAll("_"," ")} ${Math.round(g.progress*100)}%`).join(" · ")||"—"}</div><small>RECENT MEMORY</small><div>${(c.memories||[]).slice(-2).map(m=>m.summary).join(" · ")||"No significant memory yet"}</div></div>`;}
+function focusCitizenOnMap(agent) {
+  if (!agent || !snapshot) return;
+
+  // Give the selected citizen enough visual space without zooming in too far.
+  if (camera.zoom < 1.28) {
+    camera.zoom = 1.28;
+  }
+
+  // Calculate the citizen position using the same renderer used by the map.
+  const point = agentScreen(agent, snapshot.agents.length);
+
+  // Move the citizen close to the center of the visible map.
+  camera.x += canvas.clientWidth * 0.5 - point.x;
+  camera.y += canvas.clientHeight * 0.48 - point.y;
+
+  staticDirty = true;
+}
+
+async function showCitizen(id) {
+  selected = id || null;
+  selectedCitizen = null;
+
+  document.getElementById("citizenSelect").value = id || "";
+
+  const detail = document.getElementById("citizenDetail");
+
+  if (!id) {
+    detail.className = "citizen empty-state";
+    detail.innerHTML =
+      "Select a citizen to follow their life in the city.";
+    return;
+  }
+
+  const response = await fetch(`/api/v1/world/citizens/${id}`);
+
+  if (!response.ok) {
+    selected = null;
+    selectedCitizen = null;
+
+    detail.className = "citizen empty-state";
+    detail.innerHTML =
+      "Citizen data is no longer available. Refresh the viewer and try again.";
+
+    await loadCitizens();
+    return;
+  }
+
+  const c = await response.json();
+
+  selectedCitizen = c;
+
+  detail.className = "citizen";
+
+  detail.innerHTML = `
+    <span class="agent-tag">AUTONOMOUS CITIZEN</span>
+    <strong>${c.name}</strong><br>
+    ${c.occupation}
+
+    <div class="citizen-grid">
+      <div class="citizen-stat">
+        <small>Age</small>
+        <b>${c.age}</b>
+      </div>
+
+      <div class="citizen-stat">
+        <small>Cash</small>
+        <b>${c.cash} RWC</b>
+      </div>
+
+      <div class="citizen-stat">
+        <small>Action</small>
+        <b>${c.action || "idle"}</b>
+      </div>
+
+      <div class="citizen-stat">
+        <small>Location</small>
+        <b>${c.current_location || "—"}</b>
+      </div>
+
+      <div class="citizen-stat">
+        <small>Hunger</small>
+        <b>${Math.round((c.needs?.hunger || 0) * 100)}%</b>
+      </div>
+
+      <div class="citizen-stat">
+        <small>Energy Need</small>
+        <b>${Math.round((c.needs?.energy || 0) * 100)}%</b>
+      </div>
+
+      <div class="citizen-stat">
+        <small>Social Need</small>
+        <b>${Math.round((c.needs?.social || 0) * 100)}%</b>
+      </div>
+
+      <div class="citizen-stat">
+        <small>Relations</small>
+        <b>${c.relationships || 0}</b>
+      </div>
+    </div>
+
+    <div class="citizen-life">
+      <small>GOALS</small>
+      <div>
+        ${
+          (c.goals || [])
+            .map(
+              (goal) =>
+                `${goal.type.replaceAll("_", " ")} ${Math.round(
+                  goal.progress * 100
+                )}%`
+            )
+            .join(" · ") || "—"
+        }
+      </div>
+
+      <small>RECENT MEMORY</small>
+      <div>
+        ${
+          (c.memories || [])
+            .slice(-2)
+            .map((memory) => memory.summary)
+            .join(" · ") || "No significant memory yet"
+        }
+      </div>
+    </div>
+  `;
+
+  const selectedAgent = selectedAgentForMap();
+
+  if (selectedAgent) {
+    focusCitizenOnMap(selectedAgent);
+  }
+}
+
 async function loadEvents(){const response=await fetch("/api/v1/world/events?limit=14");const data=await response.json();renderEvents(data.items);}
 async function refresh(){const response=await fetch("/api/v1/world/map?render_sample=120");snapshot=await response.json();cityEngine.invalidate();cityScene=null;staticDirty=true;renderMetrics();loadEvents();}
 async function stepWorld(){await fetch("/api/v1/world/step?steps=1",{method:"POST"});await refresh();}
