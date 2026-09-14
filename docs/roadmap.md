@@ -117,3 +117,27 @@ This release completes the autonomous-agent roadmap as one integrated capability
 
 The central simulation loop is now `Observe → Believe → Goal → Plan → Risk Check → Act/Review → Learn → Re-plan`.
 High-risk actions are blocked until a human approves, rejects or modifies them.
+
+## v1.2.3 ? Performance & Runtime Optimization ?
+
+This release optimizes the Autonomous Living World runtime without reducing population,
+agent count, simulation capabilities, or autonomous behavior.
+
+Completed runtime improvements:
+
+- incremental accounting balance indexes
+- constant-time account balance lookups
+- indexed citizen relationship lookup
+- lower-overhead economy metric aggregation
+- cached geographic shortest paths
+- automatic route-cache invalidation
+- immutable cached routes with safe per-request copies
+- preserved accounting journal and audit behavior
+- preserved 1,500 citizens and 1,544 autonomous agents
+
+Representative development benchmark:
+
+- before: approximately 0.70 seconds per simulation tick
+- after: approximately 0.039 seconds per simulation tick
+- throughput: approximately 25?28 simulation steps per second
+- overall improvement: approximately 18x

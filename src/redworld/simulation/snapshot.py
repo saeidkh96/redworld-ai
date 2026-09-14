@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.2.2",
+        "version": "1.2.3",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
@@ -250,8 +250,7 @@ def civilization_snapshot(world: WorldState) -> dict[str, object]:
             "average_skill": round(state.careers.average_skill, 3),
             "wage_index": round(state.careers.wage_index, 3),
             "career_ladder": {
-                key: round(value, 3)
-                for key, value in state.careers.career_ladder.items()
+                key: round(value, 3) for key, value in state.careers.career_ladder.items()
             },
             "class_distribution": {
                 key.value: round(value, 3)

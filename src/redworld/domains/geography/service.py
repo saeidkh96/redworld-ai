@@ -15,6 +15,12 @@ class GeographyService:
     locations: dict[str, Location] = field(default_factory=dict)
     adjacency: dict[str, list[TravelEdge]] = field(default_factory=dict)
 
+    _path_cache: dict[tuple[str, str], tuple[str, ...]] = field(
+        default_factory=dict,
+        init=False,
+        repr=False,
+    )
+
     def add_region(self, region: Region) -> None:
         self.regions[region.id] = region
 
@@ -31,8 +37,10 @@ class GeographyService:
     def add_location(self, location: Location) -> None:
         if location.district_id not in self.districts:
             raise ValueError("location district does not exist")
+
         self.locations[location.id] = location
         self.adjacency.setdefault(location.id, [])
+        self._path_cache.clear()
 
     def connect(
         self,
@@ -44,30 +52,57 @@ class GeographyService:
     ) -> None:
         if source not in self.locations or target not in self.locations:
             raise ValueError("both locations must exist")
+
         if minutes is None:
             a = self.locations[source].coordinate
             b = self.locations[target].coordinate
             minutes = max(1, round(hypot(a.x - b.x, a.y - b.y) * 1.2))
+
         self.adjacency[source].append(TravelEdge(source, target, minutes))
+
         if bidirectional:
             self.adjacency[target].append(TravelEdge(target, source, minutes))
+
+        self._path_cache.clear()
 
     def shortest_path(self, source: str, target: str) -> list[str]:
         if source == target:
             return [source]
+
+        cache_key = (source, target)
+        cached = self._path_cache.get(cache_key)
+
+        if cached is not None:
+            return list(cached)
+
         queue: list[tuple[int, str, list[str]]] = [(0, source, [source])]
         best: dict[str, int] = {source: 0}
+
         while queue:
             cost, node, path = heappop(queue)
+
             if node == target:
-                return path
+                cached_path = tuple(path)
+                self._path_cache[cache_key] = cached_path
+                return list(cached_path)
+
             if cost != best.get(node):
                 continue
+
             for edge in self.adjacency.get(node, []):
                 new_cost = cost + edge.minutes
+
                 if new_cost < best.get(edge.target, 10**12):
                     best[edge.target] = new_cost
-                    heappush(queue, (new_cost, edge.target, [*path, edge.target]))
+                    heappush(
+                        queue,
+                        (
+                            new_cost,
+                            edge.target,
+                            [*path, edge.target],
+                        ),
+                    )
+
         raise ValueError(f"no route between {source} and {target}")
 
     def district_locations(self, district_id: str) -> list[Location]:
