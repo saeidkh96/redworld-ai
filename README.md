@@ -22,7 +22,7 @@ The project combines a spatial city with citizens, households, businesses, banki
 
 `v1.2.2 — Autonomous Living World` adds independent agent reasoning on top of Living Civilization: bounded beliefs, self-generated goals, planning, learning, agent-to-agent interaction, emergence metrics, risk evaluation and Human-in-the-Loop review for high-impact actions.
 
-## RedWorld AI v1.2.3
+## RedWorld AI v1.2.4
 
 The current world supports:
 
@@ -258,7 +258,8 @@ http://127.0.0.1:8000/viewer
 | `v1.2.0` | Human Development → Autonomous Society | Complete |
 | `v1.2.1` | Living Civilization | Complete |
 | `v1.2.2` | Autonomous Living World | Complete |
-| `v1.2.3` | Performance & Runtime Optimization | Current |
+| `v1.2.3` | Performance & Runtime Optimization | Complete |
+| `v1.2.4` | Real-Time Viewer & Smooth Motion | Current |
 
 Detailed release notes are available under `docs/releases/`.
 

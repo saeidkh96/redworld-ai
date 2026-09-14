@@ -6,7 +6,7 @@ const staticCtx = staticCanvas.getContext("2d", { alpha: false });
 let pixelRatio = 1;
 let staticDirty = true;
 let lastFrame = 0;
-const TARGET_FRAME_MS = 1000 / 24;
+const TARGET_FRAME_MS = 1000 / 60;
 const INTERACTION_DPR_CAP = 1.0;
 const IDLE_FRAME_MS = 1000 / 12;
 let panTransformRaf = 0;
@@ -985,9 +985,30 @@ function worldEntrance(locationId, agentId = "") {
   };
 }
 
+function smootherStep(value) {
+  const t = clamp(value, 0, 1);
+  return t * t * t * (t * (t * 6 - 15) + 10);
+}
+
+function worldMotionPosition(state) {
+  const progress = clamp(
+    (animationTime - state.startedAt) / Math.max(1, state.duration),
+    0,
+    1
+  );
+
+  const eased = smootherStep(progress);
+
+  return {
+    x: state.from.x + (state.to.x - state.from.x) * eased,
+    y: state.from.y + (state.to.y - state.from.y) * eased,
+  };
+}
+
 function worldAgentPoint(agent) {
   const target = worldEntrance(agent.location_id, agent.id);
   let state = worldAgentMotion.get(agent.id);
+
   if (!state) {
     state = {
       locationId: agent.location_id,
@@ -996,24 +1017,38 @@ function worldAgentPoint(agent) {
       startedAt: animationTime,
       duration: 1,
     };
+
     worldAgentMotion.set(agent.id, state);
-  } else if (state.locationId !== agent.location_id) {
-    const previous = worldEntrance(state.locationId, agent.id);
+    return target;
+  }
+
+  if (state.locationId !== agent.location_id) {
+    // Critical: continue from the position currently visible on screen.
+    // Never jump back to the previous authoritative location.
+    const current = worldMotionPosition(state);
+
+    const distance = Math.hypot(
+      target.x - current.x,
+      target.y - current.y
+    );
+
     state = {
       locationId: agent.location_id,
-      from: previous,
+      from: current,
       to: target,
       startedAt: animationTime,
-      duration: 900,
+
+      // Distance-aware visual travel time.
+      duration: Math.max(
+        1400,
+        Math.min(3200, 950 + distance * 95)
+      ),
     };
+
     worldAgentMotion.set(agent.id, state);
   }
-  const t = clamp((animationTime - state.startedAt) / state.duration, 0, 1);
-  const eased = t * t * (3 - 2 * t);
-  return {
-    x: state.from.x + (state.to.x - state.from.x) * eased,
-    y: state.from.y + (state.to.y - state.from.y) * eased,
-  };
+
+  return worldMotionPosition(state);
 }
 
 const visualNavNodes = {
@@ -1063,6 +1098,13 @@ const landmarkVisualNodes = {
 };
 
 const agentMotion = new Map();
+let locationIndex = new Map();
+
+function rebuildLocationIndex() {
+  locationIndex = new Map(
+    (snapshot?.locations || []).map((location) => [location.id, location])
+  );
+}
 
 function navAdjacency() {
   const graph = new Map(Object.keys(visualNavNodes).map((key) => [key, []]));
@@ -1075,7 +1117,7 @@ function navAdjacency() {
 const visualGraph = navAdjacency();
 
 function locationForId(locationId) {
-  return snapshot?.locations?.find((location) => location.id === locationId) || null;
+  return locationIndex.get(locationId) || null;
 }
 
 function visualNodeForLocation(locationId) {
@@ -1133,27 +1175,50 @@ function routeForLocations(fromLocationId, toLocationId, agentId) {
 }
 
 function pointAlongRoute(points, progress) {
+  if (!points.length) return { x: 0, y: 0 };
   if (points.length === 1) return points[0];
-  const segments = [];
+
   let total = 0;
+
+  for (let i = 0; i < points.length - 1; i += 1) {
+    total += Math.hypot(
+      points[i + 1].x - points[i].x,
+      points[i + 1].y - points[i].y
+    );
+  }
+
+  if (total <= 0) {
+    return points[points.length - 1];
+  }
+
+  let remaining = clamp(progress, 0, 1) * total;
+
   for (let i = 0; i < points.length - 1; i += 1) {
     const a = points[i];
     const b = points[i + 1];
-    const length = Math.hypot(b.x - a.x, b.y - a.y);
-    segments.push({ a, b, length });
-    total += length;
-  }
-  let remaining = clamp(progress, 0, 1) * total;
-  for (const segment of segments) {
-    if (remaining <= segment.length || segment === segments[segments.length - 1]) {
-      const t = segment.length ? remaining / segment.length : 1;
+
+    const length = Math.hypot(
+      b.x - a.x,
+      b.y - a.y
+    );
+
+    if (
+      remaining <= length ||
+      i === points.length - 2
+    ) {
+      const t = length
+        ? clamp(remaining / length, 0, 1)
+        : 1;
+
       return {
-        x: segment.a.x + (segment.b.x - segment.a.x) * clamp(t, 0, 1),
-        y: segment.a.y + (segment.b.y - segment.a.y) * clamp(t, 0, 1),
+        x: a.x + (b.x - a.x) * t,
+        y: a.y + (b.y - a.y) * t,
       };
     }
-    remaining -= segment.length;
+
+    remaining -= length;
   }
+
   return points[points.length - 1];
 }
 
@@ -1169,9 +1234,15 @@ function normalizedAgentPoint(agent) {
     };
     agentMotion.set(agent.id, state);
   } else if (state.locationId !== agent.location_id) {
+    const currentProgress = clamp(
+      (animationTime - state.startedAt) / Math.max(1, state.duration),
+      0,
+      1
+    );
+
     const current = pointAlongRoute(
       state.route,
-      clamp((animationTime - state.startedAt) / state.duration, 0, 1),
+      smootherStep(currentProgress)
     );
     const fromNode = visualNodeForLocation(state.locationId);
     const toNode = visualNodeForLocation(agent.location_id);
@@ -1186,12 +1257,23 @@ function normalizedAgentPoint(agent) {
       locationId: agent.location_id,
       route,
       startedAt: animationTime,
-      duration: Math.max(650, Math.min(1200, 520 + route.length * 145)),
+      duration: Math.max(
+        1500,
+        Math.min(3400, 1050 + route.length * 330)
+      ),
     };
     agentMotion.set(agent.id, state);
   }
-  const progress = clamp((animationTime - state.startedAt) / state.duration, 0, 1);
-  return pointAlongRoute(state.route, progress);
+  const progress = clamp(
+    (animationTime - state.startedAt) / Math.max(1, state.duration),
+    0,
+    1
+  );
+
+  return pointAlongRoute(
+    state.route,
+    smootherStep(progress)
+  );
 }
 
 function drawDensity(){
@@ -1734,12 +1816,37 @@ async function loadAutonomy(){
   queue.innerHTML=items.length?items.map(r=>`<div class="review-card"><span class="risk">${r.risk_level.toUpperCase()} · ${(r.risk_score*100).toFixed(0)}%</span><b>${r.agent_name} → ${r.intent.replaceAll("_"," ")}</b><p>${r.expected_impact}</p><div class="review-actions"><button class="approve" data-review="${r.id}" data-decision="approved">APPROVE</button><button class="modify" data-review="${r.id}" data-decision="modified">MODIFY</button><button class="reject" data-review="${r.id}" data-decision="rejected">REJECT</button></div></div>`).join(""):'<div class="empty-state">No high-risk actions waiting for review.</div>';
   queue.querySelectorAll("button[data-review]").forEach(button=>{button.onclick=async()=>{const id=button.dataset.review;const decision=button.dataset.decision;await fetch(`/api/v1/world/autonomy/reviews/${id}?decision=${decision}`,{method:"POST"});await loadAutonomy();await refresh();};});
 }
-async function refresh(){const response=await fetch("/api/v1/world/map?render_sample=120");snapshot=await response.json();cityEngine.invalidate();cityScene=null;staticDirty=true;renderMetrics();loadEvents();loadAutonomy();}
+async function refresh(){
+  const response = await fetch("/api/v1/world/map?render_sample=120");
+  const nextSnapshot = await response.json();
+
+  const geographyChanged =
+    !snapshot ||
+    snapshot.districts?.length !== nextSnapshot.districts?.length ||
+    snapshot.locations?.length !== nextSnapshot.locations?.length ||
+    snapshot.roads?.length !== nextSnapshot.roads?.length;
+
+  snapshot = nextSnapshot;
+
+  if (geographyChanged) {
+    rebuildLocationIndex();
+    cityEngine.invalidate();
+    cityScene = null;
+    staticDirty = true;
+  }
+
+  renderMetrics();
+
+  await Promise.all([
+    loadEvents(),
+    loadAutonomy(),
+  ]);
+}
 async function stepWorld(){await fetch("/api/v1/world/step?steps=1",{method:"POST"});await refresh();}
 
 document.getElementById("stepBtn").onclick=stepWorld;document.getElementById("citizenSelect").onchange=(e)=>showCitizen(e.target.value);document.getElementById("search").oninput=(e)=>{const q=e.target.value.toLowerCase();renderCitizenOptions(citizens.filter(c=>`${c.name} ${c.occupation}`.toLowerCase().includes(q)));};
 function renderEvents(items){document.getElementById("eventCount").textContent=items.length;const events=[...items].reverse();document.getElementById("events").innerHTML=events.length?events.map(e=>`<div class="event"><span class="tick">T${e.tick}</span><b>${e.name}</b><small>World event recorded</small></div>`).join(""):'<div class="empty-state">No events yet.</div>';}
-document.getElementById("liveBtn").onclick=()=>{live=!live;const button=document.getElementById("liveBtn");button.classList.toggle("live",live);button.textContent=live?"■ PAUSE":"▶ LIVE";if(live){socket=new WebSocket(`${location.protocol==="https:"?"wss":"ws"}://${location.host}/api/v1/world/live`);socket.onmessage=(event)=>{lastSocketMessage=performance.now();const update=JSON.parse(event.data);const oldMinute=snapshot?.summary?.minute_of_day;snapshot={...snapshot,...update,districts:snapshot.districts,locations:snapshot.locations,roads:snapshot.roads};if(oldMinute!==snapshot.summary.minute_of_day)staticDirty=true;renderMetrics();if(update.events)renderEvents(update.events);};socket.onclose=()=>{socket=null;if(live){live=false;button.classList.remove("live");button.textContent="▶ LIVE";}};}else if(socket){socket.close();socket=null;}};
+document.getElementById("liveBtn").onclick=()=>{live=!live;const button=document.getElementById("liveBtn");button.classList.toggle("live",live);button.textContent=live?"■ PAUSE":"▶ LIVE";if(live){socket=new WebSocket(`${location.protocol==="https:"?"wss":"ws"}://${location.host}/api/v1/world/live`);socket.onmessage=(event)=>{lastSocketMessage=performance.now();const update=JSON.parse(event.data);snapshot={...snapshot,...update,districts:snapshot.districts,locations:snapshot.locations,roads:snapshot.roads};renderMetrics();if(update.events)renderEvents(update.events);};socket.onclose=()=>{socket=null;if(live){live=false;button.classList.remove("live");button.textContent="▶ LIVE";}};}else if(socket){socket.close();socket=null;}};
 document.getElementById("cinemaBtn").onclick=()=>{document.body.classList.toggle("cinema");const b=document.getElementById("cinemaBtn");b.textContent=document.body.classList.contains("cinema")?"▣ EXIT CINEMA":"▣ CINEMA";setTimeout(resize,180);};
 document.querySelectorAll(".layer").forEach((button) => {
   button.onclick = () => {
@@ -1749,9 +1856,126 @@ document.querySelectorAll(".layer").forEach((button) => {
     if (["buildings", "economy", "services"].includes(layer)) staticDirty = true;
   };
 });
-function setZoom(next,ax=canvas.clientWidth/2,ay=canvas.clientHeight/2){const old=camera.zoom;camera.zoom=clamp(next,.55,1.9);const ratio=camera.zoom/old;camera.x=ax-(ax-camera.x)*ratio;camera.y=ay-(ay-camera.y)*ratio;staticDirty=true;}
-document.getElementById("zoomIn").onclick=()=>setZoom(camera.zoom*1.12);document.getElementById("zoomOut").onclick=()=>setZoom(camera.zoom/1.12);document.getElementById("resetView").onclick=()=>{Object.assign(camera,{zoom:1,x:0,y:0});staticDirty=true;};
-canvas.addEventListener("wheel",(e)=>{e.preventDefault();const r=canvas.getBoundingClientRect();setZoom(camera.zoom*(e.deltaY<0?1.08:1/1.08),e.clientX-r.left,e.clientY-r.top);},{passive:false});
+let zooming = false;
+let visualZoom = camera.zoom;
+let zoomStart = camera.zoom;
+let zoomAnchorX = 0;
+let zoomAnchorY = 0;
+let zoomCommitTimer = null;
+let zoomFrame = 0;
+
+function renderZoomPreview() {
+  zoomFrame = 0;
+
+  if (!zooming) return;
+
+  const scale = visualZoom / zoomStart;
+
+  canvas.style.transformOrigin =
+    `${zoomAnchorX}px ${zoomAnchorY}px`;
+
+  canvas.style.transform =
+    `translate3d(0,0,0) scale(${scale})`;
+}
+
+function queueZoomPreview() {
+  if (zoomFrame) return;
+  zoomFrame = requestAnimationFrame(renderZoomPreview);
+}
+
+function commitVisualZoom() {
+  if (!zooming) return;
+
+  const oldZoom = camera.zoom;
+  const nextZoom = clamp(visualZoom, .55, 1.9);
+  const ratio = nextZoom / oldZoom;
+
+  camera.zoom = nextZoom;
+
+  camera.x =
+    zoomAnchorX - (zoomAnchorX - camera.x) * ratio;
+
+  camera.y =
+    zoomAnchorY - (zoomAnchorY - camera.y) * ratio;
+
+  zooming = false;
+  zoomStart = camera.zoom;
+  visualZoom = camera.zoom;
+
+  canvas.style.transform = "translate3d(0,0,0)";
+  canvas.style.transformOrigin = "50% 50%";
+
+  staticDirty = true;
+}
+
+function smoothZoom(factor, ax, ay) {
+  if (!zooming) {
+    zooming = true;
+    zoomStart = camera.zoom;
+    visualZoom = camera.zoom;
+  }
+
+  zoomAnchorX = ax;
+  zoomAnchorY = ay;
+
+  visualZoom = clamp(
+    visualZoom * factor,
+    .55,
+    1.9
+  );
+
+  queueZoomPreview();
+
+  clearTimeout(zoomCommitTimer);
+
+  zoomCommitTimer = setTimeout(
+    commitVisualZoom,
+    140
+  );
+}
+
+document.getElementById("zoomIn").onclick=()=>{
+  smoothZoom(
+    1.12,
+    canvas.clientWidth/2,
+    canvas.clientHeight/2
+  );
+};
+
+document.getElementById("zoomOut").onclick=()=>{
+  smoothZoom(
+    1/1.12,
+    canvas.clientWidth/2,
+    canvas.clientHeight/2
+  );
+};
+
+document.getElementById("resetView").onclick=()=>{
+  zooming=false;
+  clearTimeout(zoomCommitTimer);
+  canvas.style.transform="translate3d(0,0,0)";
+  Object.assign(camera,{zoom:1,x:0,y:0});
+  visualZoom=1;
+  zoomStart=1;
+  staticDirty=true;
+};
+
+canvas.addEventListener("wheel",(e)=>{
+  e.preventDefault();
+
+  const r=canvas.getBoundingClientRect();
+
+  zoomAnchorX=e.clientX-r.left;
+  zoomAnchorY=e.clientY-r.top;
+
+  const factor=Math.exp(-e.deltaY*0.0015);
+
+  smoothZoom(
+    factor,
+    zoomAnchorX,
+    zoomAnchorY
+  );
+},{passive:false});
 canvas.addEventListener("pointerdown",(e)=>{
   camera.dragging=true;
   panStartX=e.clientX;panStartY=e.clientY;

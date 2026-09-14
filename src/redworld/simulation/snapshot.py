@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.2.3",
+        "version": "1.2.4",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
