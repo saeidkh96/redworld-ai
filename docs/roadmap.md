@@ -97,3 +97,23 @@ This release consolidates the planned `v1.2.1` through `v1.3.0` capability line 
 - Final Integration: API, viewer summary, simulation cadence, tests and release documentation
 
 The world remains authoritative: civilization systems observe and evolve world-owned state through deterministic services and explicit events.
+
+## v1.2.2 — Autonomous Living World ✅
+
+This release completes the autonomous-agent roadmap as one integrated capability line:
+
+1. Autonomous Agent Core
+2. Goals, Needs & Intentions
+3. Memory & Learning
+4. Independent Planning
+5. Agent-to-Agent Interaction
+6. Limited Knowledge & Beliefs
+7. Emergent Behavior
+8. Risk & Safety Engine
+9. Human-in-the-Loop
+10. Long-Running Autonomous World
+11. Autonomous World Intelligence
+12. Autonomous Living World
+
+The central simulation loop is now `Observe → Believe → Goal → Plan → Risk Check → Act/Review → Learn → Re-plan`.
+High-risk actions are blocked until a human approves, rejects or modifies them.

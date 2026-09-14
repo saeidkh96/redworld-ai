@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from redworld.core.events import DomainEvent
 from redworld.domain.value_objects.money import Money
 from redworld.domains.actions import ActionService
+from redworld.domains.agents import AutonomousAgentService
 from redworld.domains.autonomy import AutonomousSocietyService
 from redworld.domains.businesses import BusinessService
 from redworld.domains.civilization import LivingCivilizationService
@@ -47,6 +48,15 @@ class SimulationEngine:
             events=self.world.events,
         )
 
+        AutonomousAgentService().bootstrap(
+            state=self.world.autonomous_world,
+            citizens=citizens,
+            businesses=list(self.world.businesses.values()),
+            society=self.world.autonomous_society,
+            tick=self.world.tick,
+            events=self.world.events,
+        )
+
     def step(self) -> WorldState:
         if self.world.geography.locations:
             return self._step_living_world()
@@ -66,6 +76,7 @@ class SimulationEngine:
         progression = CitizenProgressionService()
         autonomy = AutonomousSocietyService()
         civilization = LivingCivilizationService()
+        agent_service = AutonomousAgentService()
         self._bootstrap_living_world()
         self.world.commerce.restock(day=self.world.clock.day, businesses=businesses)
         if tick % 4 == 0:
@@ -87,12 +98,17 @@ class SimulationEngine:
                     continue
             if (citizen.id.int + tick) % 2 != 0:
                 continue
+            agent = self.world.autonomous_world.agents.get(str(citizen.id))
+            preferred_intent = None
+            if agent is not None and agent.plan is not None and not agent.plan.complete:
+                preferred_intent = agent.plan.steps[agent.plan.current_step].intent.value
             proposal = decision_service.choose(
                 citizen=citizen,
                 minute_of_day=minute,
                 market_location_id=market_id,
                 park_location_id=park_id,
                 hospital_location_id=hospital_id,
+                preferred_intent=preferred_intent,
             )
             if proposal.action.value == "idle":
                 continue
@@ -161,6 +177,16 @@ class SimulationEngine:
                     month=self.world.clock.month,
                     events=self.world.events,
                 )
+        agent_service.update(
+            state=self.world.autonomous_world,
+            citizens=self.world.citizens,
+            businesses=self.world.businesses,
+            profiles=self.world.life_profiles,
+            society=self.world.autonomous_society,
+            civilization=self.world.civilization,
+            tick=tick,
+            events=self.world.events,
+        )
         refresh_economy_metrics(self.world)
         self.world.events.append(
             DomainEvent(

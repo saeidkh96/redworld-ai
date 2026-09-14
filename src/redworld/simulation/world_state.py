@@ -4,6 +4,7 @@ from uuid import UUID
 from redworld.core.events import EventStore
 from redworld.domain.entities import Bank, Business, Citizen, Economy, Government
 from redworld.domains.accounting.ledger import Ledger
+from redworld.domains.agents import AutonomousWorldState
 from redworld.domains.autonomy import SocietyState
 from redworld.domains.banking.service import BankingService
 from redworld.domains.civilization import CivilizationState
@@ -43,3 +44,4 @@ class WorldState:
     life_profiles: dict[str, CitizenLifeProfile] = field(default_factory=dict)
     autonomous_society: SocietyState = field(default_factory=SocietyState)
     civilization: CivilizationState = field(default_factory=CivilizationState)
+    autonomous_world: AutonomousWorldState = field(default_factory=AutonomousWorldState)

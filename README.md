@@ -20,9 +20,9 @@
 
 The project combines a spatial city with citizens, households, businesses, banking, government, social relationships, physical commerce, memory, goals, and an accounting-backed economy. The world itself remains the source of truth: citizens and future AI agents can propose actions, but all actions are validated and executed by world systems.
 
-`v1.2.1 — Living Civilization` integrates the full post-autonomous-society roadmap: generations, careers and mobility, dynamic economy, politics, social dynamics, city evolution, crises, causal history and adaptive world intelligence.
+`v1.2.2 — Autonomous Living World` adds independent agent reasoning on top of Living Civilization: bounded beliefs, self-generated goals, planning, learning, agent-to-agent interaction, emergence metrics, risk evaluation and Human-in-the-Loop review for high-impact actions.
 
-## RedWorld AI v1.2.1
+## RedWorld AI v1.2.2
 
 The current world supports:
 
@@ -42,6 +42,10 @@ The current world supports:
 - **Goals and progress evaluation**
 - **Citizen Life** with education, skills, happiness, stress, health, belonging, civic trust, reputation, autonomy and aging
 - **Autonomous Society** with communities, evolving norms, institutions, public mood, cohesion, participation, polarization and collective decisions
+- **Autonomous agents** for citizens, businesses and institutions with bounded beliefs, goals, plans and learning
+- **Agent-to-agent interaction** and emergent world metrics
+- **Risk & Safety Engine** before autonomous high-impact actions
+- **Human-in-the-Loop review** with Approve / Modify / Reject controls
 - **Genesis City viewer** with live world and citizen state
 - **FastAPI + WebSocket APIs** for simulation and visualization
 - **Seeded world generation** for reproducible experiments
@@ -70,10 +74,11 @@ Experience Layer
 └── Genesis City Viewer
 
 Intelligence Layer
-├── Decisions
-├── Planning
-├── Goals
-└── Memory
+├── Autonomous Agents
+├── Decisions & Planning
+├── Goals, Beliefs & Memory
+├── Risk Evaluation
+└── Human-in-the-Loop Review
 
 Society Layer
 ├── Households
@@ -251,9 +256,20 @@ http://127.0.0.1:8000/viewer
 | `v1.0.0` | Living City | Complete |
 | `v1.1.0` | Citizen Life / Autonomous Society | Complete |
 | `v1.2.0` | Human Development → Autonomous Society | Complete |
-| `v1.2.1` | Living Civilization | Current |
+| `v1.2.1` | Living Civilization | Complete |
+| `v1.2.2` | Autonomous Living World | Current |
 
 Detailed release notes are available under `docs/releases/`.
+
+## Autonomous Living World v1.2.2
+
+`v1.2.2` completes the autonomous-agent capability line from Autonomous Agent Core through the final Autonomous Living World integration. Citizens, businesses and institutions now observe, form bounded beliefs, prioritize goals, plan, act, interact and learn without direct per-agent commands. High-risk actions are held for Human-in-the-Loop review before any bounded simulation effect is applied.
+
+The core agent loop is:
+
+`Observe → Believe → Goal → Plan → Risk Check → Act/Review → Learn → Re-plan`
+
+See `docs/V1_2_2_AUTONOMOUS_LIVING_WORLD.md` for the complete capability map and API surface.
 
 ## Living Civilization v1.2.1
 
@@ -261,7 +277,7 @@ Detailed release notes are available under `docs/releases/`.
 
 The scope remains extensible: future releases can expand these systems into richer multi-city, regional and world-scale simulations without replacing the current foundations.
 
-The architecture is intended to grow toward deeper citizen intelligence, richer families and organizations, education, healthcare, politics and institutions, media and culture, crime and public safety, resources and energy, environmental systems, migration, multiple cities, inter-city economies, and agentic/LLM reasoning.
+The architecture is intended to grow toward deeper citizen intelligence, richer families and organizations, education, healthcare, politics and institutions, media and culture, crime and public safety, resources and energy, environmental systems, migration, multiple cities, inter-city economies, and optional model-assisted reasoning behind the current deterministic agent contracts.
 
 These are future directions rather than claims about the current implementation.
 
@@ -281,7 +297,7 @@ These are future directions rather than claims about the current implementation.
 
 ## Development Philosophy
 
-RedWorld favors explicit state, deterministic behavior, domain boundaries, testable rules, and observable events over hidden agent behavior.
+RedWorld favors explicit state, deterministic behavior, domain boundaries, testable rules, observable events, and inspectable agent reasoning state.
 
 The long-term goal is not simply to create many AI agents. It is to create a world with enough structure that intelligent agents have something meaningful to live in, interact with, and change.
 

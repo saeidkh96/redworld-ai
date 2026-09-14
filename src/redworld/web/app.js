@@ -1542,7 +1542,7 @@ function animate(time){
 
 function formatNumber(v){return Number(v||0).toLocaleString();}
 function renderMetrics(){
-  const s=snapshot.summary;const unemployment=Number(s.unemployment_rate||0)*100;const civ=s.living_civilization||{};const items=[["Population",formatNumber(s.population)],["Employed",formatNumber(s.employed)],["Businesses",formatNumber(s.businesses)],["Unemployment",`${unemployment.toFixed(1)}%`],["Development",`${Math.round(Number(civ.development_level||0)*100)}%`],["Stability",`${Math.round(Number(civ.stability||0)*100)}%`],["Prosperity",`${Math.round(Number(civ.prosperity||0)*100)}%`],["World tick",formatNumber(s.tick)]];
+  const s=snapshot.summary;const unemployment=Number(s.unemployment_rate||0)*100;const civ=s.living_civilization||{};const autonomous=s.autonomous_world||{};const items=[["Population",formatNumber(s.population)],["Agents",formatNumber(autonomous.agents||0)],["Businesses",formatNumber(s.businesses)],["Unemployment",`${unemployment.toFixed(1)}%`],["Development",`${Math.round(Number(civ.development_level||0)*100)}%`],["Emergence",`${Math.round(Number(autonomous.emergence_index||0)*100)}%`],["HITL Pending",formatNumber(autonomous.pending_human_reviews||0)],["World tick",formatNumber(s.tick)]];
   document.getElementById("metrics").innerHTML=items.map(([l,v])=>`<div class="metric"><b>${v}</b><span>${l}</span></div>`).join("");
   document.getElementById("worldTime").textContent=`${s.time.toUpperCase()} • TICK ${s.tick}`;document.getElementById("overlayPopulation").textContent=formatNumber(s.population);document.getElementById("cinemaTime").textContent=s.time.toUpperCase();document.title=`RedWorld AI — ${s.time}`;
 }
@@ -1673,6 +1673,13 @@ async function showCitizen(id) {
         Influence ${Math.round((c.life?.community_influence || 0) * 100)}%
       </div>
 
+      <small>AUTONOMOUS AGENT</small>
+      <div>
+        Autonomy ${Math.round((c.autonomous_agent?.autonomy || 0) * 100)}% ·
+        Decisions ${c.autonomous_agent?.decisions || 0} ·
+        Plan ${c.autonomous_agent?.plan?.goal_key?.replaceAll("_", " ") || "forming"}
+      </div>
+
       <small>GOALS</small>
       <div>
         ${
@@ -1717,7 +1724,17 @@ async function showCitizen(id) {
 }
 
 async function loadEvents(){const response=await fetch("/api/v1/world/events?limit=14");const data=await response.json();renderEvents(data.items);}
-async function refresh(){const response=await fetch("/api/v1/world/map?render_sample=120");snapshot=await response.json();cityEngine.invalidate();cityScene=null;staticDirty=true;renderMetrics();loadEvents();}
+async function loadAutonomy(){
+  const response=await fetch("/api/v1/world/autonomy");
+  const data=await response.json();
+  document.getElementById("reviewCount").textContent=String(data.pending_human_reviews||0);
+  document.getElementById("autonomyStatus").innerHTML=`<div><small>Agents</small><b>${formatNumber(data.agents)}</b></div><div><small>Emergence</small><b>${Math.round((data.emergence_index||0)*100)}%</b></div><div><small>Learning</small><b>${Math.round((data.learning_index||0)*100)}%</b></div>`;
+  const queue=document.getElementById("reviewQueue");
+  const items=data.pending_reviews||[];
+  queue.innerHTML=items.length?items.map(r=>`<div class="review-card"><span class="risk">${r.risk_level.toUpperCase()} · ${(r.risk_score*100).toFixed(0)}%</span><b>${r.agent_name} → ${r.intent.replaceAll("_"," ")}</b><p>${r.expected_impact}</p><div class="review-actions"><button class="approve" data-review="${r.id}" data-decision="approved">APPROVE</button><button class="modify" data-review="${r.id}" data-decision="modified">MODIFY</button><button class="reject" data-review="${r.id}" data-decision="rejected">REJECT</button></div></div>`).join(""):'<div class="empty-state">No high-risk actions waiting for review.</div>';
+  queue.querySelectorAll("button[data-review]").forEach(button=>{button.onclick=async()=>{const id=button.dataset.review;const decision=button.dataset.decision;await fetch(`/api/v1/world/autonomy/reviews/${id}?decision=${decision}`,{method:"POST"});await loadAutonomy();await refresh();};});
+}
+async function refresh(){const response=await fetch("/api/v1/world/map?render_sample=120");snapshot=await response.json();cityEngine.invalidate();cityScene=null;staticDirty=true;renderMetrics();loadEvents();loadAutonomy();}
 async function stepWorld(){await fetch("/api/v1/world/step?steps=1",{method:"POST"});await refresh();}
 
 document.getElementById("stepBtn").onclick=stepWorld;document.getElementById("citizenSelect").onchange=(e)=>showCitizen(e.target.value);document.getElementById("search").oninput=(e)=>{const q=e.target.value.toLowerCase();renderCitizenOptions(citizens.filter(c=>`${c.name} ${c.occupation}`.toLowerCase().includes(q)));};

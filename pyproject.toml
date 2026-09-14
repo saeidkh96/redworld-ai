@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "redworld-ai"
-version = "1.2.1"
+version = "1.2.2"
 description = "Autonomous AI Society & Economy Simulation Platform"
 readme = "README.md"
 requires-python = ">=3.12"

@@ -7,8 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSock
 
 from redworld.api.dependencies import get_engine
 from redworld.api.schemas import SimulationStepResponse
+from redworld.domains.agents import ApprovalStatus, AutonomousAgentService
 from redworld.simulation.engine import SimulationEngine
 from redworld.simulation.snapshot import (
+    agent_snapshot,
+    autonomous_world_snapshot,
     civilization_snapshot,
     live_snapshot,
     map_snapshot,
@@ -119,6 +122,7 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
             for memory in engine.world.memories.recent(citizen.id)
         ],
         "relationships": len(engine.world.society.for_citizen(citizen.id)),
+        "autonomous_agent": agent_snapshot(engine.world, str(citizen.id)),
         "life": None
         if profile is None
         else {
@@ -144,7 +148,8 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
             "community_influence": round(profile.community_influence, 3),
             "experience_days": profile.experience_days,
             "history": [
-                {"year": e.year, "kind": e.kind, "summary": e.summary} for e in profile.events[-10:]
+                {"year": e.year, "kind": e.kind, "summary": e.summary}
+                for e in profile.events[-10:]
             ],
         },
     }
@@ -211,6 +216,90 @@ def get_autonomous_society(engine: EngineDependency) -> dict[str, object]:
             {"name": n.name, "strength": round(n.strength, 3), "compliance": round(n.compliance, 3)}
             for n in state.norms.values()
         ],
+    }
+
+
+@router.get("/autonomy")
+def get_autonomous_world(engine: EngineDependency) -> dict[str, object]:
+    return autonomous_world_snapshot(engine.world)
+
+
+@router.get("/autonomy/agents")
+def list_autonomous_agents(
+    engine: EngineDependency,
+    kind: str | None = Query(None),
+    limit: int = Query(100, ge=1, le=2000),
+    offset: int = Query(0, ge=0),
+) -> dict[str, object]:
+    agents = list(engine.world.autonomous_world.agents.values())
+    if kind is not None:
+        agents = [agent for agent in agents if agent.kind.value == kind]
+    selected = agents[offset : offset + limit]
+    return {
+        "total": len(agents),
+        "offset": offset,
+        "limit": limit,
+        "items": [
+            {
+                "agent_id": agent.agent_id,
+                "kind": agent.kind.value,
+                "name": agent.name,
+                "autonomy": round(agent.autonomy, 3),
+                "decisions": agent.decisions,
+                "last_decision_tick": agent.last_decision_tick,
+                "goals": [goal.key for goal in agent.goals],
+                "plan_goal": agent.plan.goal_key if agent.plan else None,
+            }
+            for agent in selected
+        ],
+    }
+
+
+@router.get("/autonomy/agents/{agent_id}")
+def get_autonomous_agent(agent_id: str, engine: EngineDependency) -> dict[str, object]:
+    payload = agent_snapshot(engine.world, agent_id)
+    if payload is None:
+        raise HTTPException(status_code=404, detail="autonomous agent not found")
+    return payload
+
+
+@router.get("/autonomy/reviews")
+def get_human_review_queue(engine: EngineDependency) -> dict[str, object]:
+    payload = autonomous_world_snapshot(engine.world)
+    return {
+        "pending": payload["pending_human_reviews"],
+        "items": payload["pending_reviews"],
+    }
+
+
+@router.post("/autonomy/reviews/{review_id}")
+def resolve_human_review(
+    review_id: str,
+    engine: EngineDependency,
+    decision: Annotated[ApprovalStatus, Query()],
+    note: Annotated[str, Query()] = "",
+) -> dict[str, object]:
+    if review_id not in engine.world.autonomous_world.pending_reviews:
+        raise HTTPException(status_code=404, detail="review not found")
+    try:
+        review = AutonomousAgentService().resolve_review(
+            state=engine.world.autonomous_world,
+            review_id=review_id,
+            decision=decision,
+            note=note,
+            society=engine.world.autonomous_society,
+            civilization=engine.world.civilization,
+            tick=engine.world.tick,
+            events=engine.world.events,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {
+        "id": review.id,
+        "status": review.status.value,
+        "agent_id": review.agent_id,
+        "intent": review.intent.value,
+        "resolved_tick": review.resolved_tick,
     }
 
 

@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.2.1",
+        "version": "1.2.2",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
@@ -42,6 +42,16 @@ def world_summary(world: WorldState) -> dict[str, object]:
             "active_crises": len(world.civilization.crises.active),
             "history_events": len(world.civilization.history.records),
             "strategy": world.civilization.intelligence.strategy,
+        },
+        "autonomous_world": {
+            "enabled": world.autonomous_world.enabled,
+            "agents": len(world.autonomous_world.agents),
+            "total_decisions": world.autonomous_world.total_decisions,
+            "autonomous_actions": world.autonomous_world.autonomous_actions,
+            "pending_human_reviews": len(world.autonomous_world.pending_reviews),
+            "emergence_index": round(world.autonomous_world.emergence_index, 3),
+            "learning_index": round(world.autonomous_world.learning_index, 3),
+            "world_years_simulated": round(world.autonomous_world.world_years_simulated, 4),
         },
         "autonomous_society": {
             "public_mood": round(world.autonomous_society.public_mood, 3),
@@ -240,7 +250,8 @@ def civilization_snapshot(world: WorldState) -> dict[str, object]:
             "average_skill": round(state.careers.average_skill, 3),
             "wage_index": round(state.careers.wage_index, 3),
             "career_ladder": {
-                key: round(value, 3) for key, value in state.careers.career_ladder.items()
+                key: round(value, 3)
+                for key, value in state.careers.career_ladder.items()
             },
             "class_distribution": {
                 key.value: round(value, 3)
@@ -331,4 +342,119 @@ def civilization_snapshot(world: WorldState) -> dict[str, object]:
             "decisions": state.intelligence.decisions,
         },
         "history_count": len(state.history.records),
+    }
+
+
+def autonomous_world_snapshot(world: WorldState) -> dict[str, object]:
+    state = world.autonomous_world
+    kinds = Counter(agent.kind.value for agent in state.agents.values())
+    pending = list(state.pending_reviews.values())
+    return {
+        "enabled": state.enabled,
+        "initialized": state.initialized,
+        "agents": len(state.agents),
+        "agent_kinds": dict(kinds),
+        "total_decisions": state.total_decisions,
+        "autonomous_actions": state.autonomous_actions,
+        "blocked_actions": state.blocked_actions,
+        "pending_human_reviews": len(pending),
+        "approved_actions": state.approved_actions,
+        "rejected_actions": state.rejected_actions,
+        "replans": state.replans,
+        "interactions": len(state.interactions),
+        "collective_signal": round(state.collective_signal, 3),
+        "emergence_index": round(state.emergence_index, 3),
+        "learning_index": round(state.learning_index, 3),
+        "world_years_simulated": round(state.world_years_simulated, 4),
+        "pending_reviews": [
+            {
+                "id": review.id,
+                "agent_id": review.agent_id,
+                "agent_name": review.agent_name,
+                "agent_kind": review.agent_kind.value,
+                "intent": review.intent.value,
+                "reason": review.reason,
+                "risk_level": review.risk_level.value,
+                "risk_score": round(review.risk_score, 3),
+                "expected_impact": review.expected_impact,
+                "created_tick": review.created_tick,
+                "status": review.status.value,
+            }
+            for review in pending[-50:]
+        ],
+        "recent_interactions": [
+            {
+                "tick": interaction.tick,
+                "source_agent_id": interaction.source_agent_id,
+                "target_agent_id": interaction.target_agent_id,
+                "kind": interaction.kind,
+                "outcome": round(interaction.outcome, 3),
+                "summary": interaction.summary,
+            }
+            for interaction in state.interactions[-30:]
+        ],
+    }
+
+
+def agent_snapshot(world: WorldState, agent_id: str) -> dict[str, object] | None:
+    agent = world.autonomous_world.agents.get(agent_id)
+    if agent is None:
+        return None
+    return {
+        "agent_id": agent.agent_id,
+        "kind": agent.kind.value,
+        "name": agent.name,
+        "autonomy": round(agent.autonomy, 3),
+        "risk_tolerance": round(agent.risk_tolerance, 3),
+        "learning_rate": round(agent.learning_rate, 3),
+        "last_observed_tick": agent.last_observed_tick,
+        "last_decision_tick": agent.last_decision_tick,
+        "decisions": agent.decisions,
+        "successful_actions": agent.successful_actions,
+        "failed_actions": agent.failed_actions,
+        "beliefs": {
+            key: {
+                "value": round(belief.value, 3),
+                "confidence": round(belief.confidence, 3),
+                "learned_tick": belief.learned_tick,
+                "source": belief.source,
+            }
+            for key, belief in agent.beliefs.items()
+        },
+        "goals": [
+            {
+                "key": goal.key,
+                "priority": round(goal.priority, 3),
+                "target": round(goal.target, 3),
+                "progress": round(goal.progress, 3),
+                "active": goal.active,
+            }
+            for goal in agent.goals
+        ],
+        "plan": None
+        if agent.plan is None
+        else {
+            "goal_key": agent.plan.goal_key,
+            "current_step": agent.plan.current_step,
+            "revisions": agent.plan.revisions,
+            "complete": agent.plan.complete,
+            "steps": [
+                {
+                    "intent": step.intent.value,
+                    "reason": step.reason,
+                    "completed": step.completed,
+                }
+                for step in agent.plan.steps
+            ],
+        },
+        "memories": [
+            {
+                "tick": memory.tick,
+                "kind": memory.kind,
+                "summary": memory.summary,
+                "outcome": round(memory.outcome, 3),
+                "importance": round(memory.importance, 3),
+            }
+            for memory in agent.memories[-16:]
+        ],
     }

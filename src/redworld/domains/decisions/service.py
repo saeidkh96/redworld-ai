@@ -15,6 +15,7 @@ class DecisionService:
         market_location_id: str | None,
         park_location_id: str | None,
         hospital_location_id: str | None,
+        preferred_intent: str | None = None,
     ) -> ActionProposal:
         needs = citizen.needs
         schedule = citizen.schedule
@@ -31,6 +32,28 @@ class DecisionService:
             return ActionProposal(ActionType.IDLE, citizen.home_location_id, "home evening")
         if needs.hunger >= 0.72 and market_location_id is not None:
             return ActionProposal(ActionType.EAT, market_location_id, "hunger")
+        if preferred_intent == "seek_healthcare" and hospital_location_id is not None:
+            return ActionProposal(
+                ActionType.HEALTHCARE, hospital_location_id, "autonomous plan: healthcare"
+            )
+        if preferred_intent in {"socialize", "collaborate", "peaceful_protest"}:
+            if park_location_id is not None:
+                return ActionProposal(
+                    ActionType.SOCIALIZE,
+                    park_location_id,
+                    "autonomous plan: social connection",
+                )
+        if preferred_intent == "rest" and citizen.home_location_id is not None:
+            return ActionProposal(
+                ActionType.RELAX,
+                citizen.home_location_id,
+                "autonomous plan: rest",
+            )
+        if preferred_intent in {"earn_income", "change_job"}:
+            if citizen.employed and citizen.work_location_id is not None:
+                return ActionProposal(
+                    ActionType.WORK, citizen.work_location_id, "autonomous plan: career"
+                )
         if (
             citizen.employed
             and citizen.work_location_id is not None
