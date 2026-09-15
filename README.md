@@ -439,19 +439,11 @@ Commercial use requires separate permission.
 
 ------------------------------------------------------------------------
 
-```{=html}
 <p align="center">
-```
-`<strong>`{=html}RedWorld AI`</strong>`{=html}`<br>`{=html} SIMULATE ·
-BUILD · DECIDE · EVOLVE
-```{=html}
+  <strong>RedWorld AI</strong><br>
+  SIMULATE · BUILD · DECIDE · EVOLVE
 </p>
-```
-```{=html}
+
 <p align="center">
-```
-Created and developed by `<strong>`{=html}Saeid
-Khalilian`</strong>`{=html}
-```{=html}
+  Created and developed by <strong>Saeid Khalilian</strong>
 </p>
-```
