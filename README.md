@@ -22,7 +22,7 @@ The project combines a spatial city with citizens, households, businesses, banki
 
 `v1.2.2 — Autonomous Living World` adds independent agent reasoning on top of Living Civilization: bounded beliefs, self-generated goals, planning, learning, agent-to-agent interaction, emergence metrics, risk evaluation and Human-in-the-Loop review for high-impact actions.
 
-## RedWorld AI v1.2.4
+## RedWorld AI v1.3.0
 
 The current world supports:
 
@@ -259,7 +259,13 @@ http://127.0.0.1:8000/viewer
 | `v1.2.1` | Living Civilization | Complete |
 | `v1.2.2` | Autonomous Living World | Complete |
 | `v1.2.3` | Performance & Runtime Optimization | Complete |
-| `v1.2.4` | Real-Time Viewer & Smooth Motion | Current |
+| `v1.2.4` | Real-Time Viewer & Smooth Motion | Complete |
+| `v1.2.5` | Entity-Level Life Events | Complete |
+| `v1.2.6` | Real Economy & Employment | Complete |
+| `v1.2.7` | Government & Policy Effects | Complete |
+| `v1.2.8` | Dynamic City Evolution | Complete |
+| `v1.2.9` | Crisis & World Events | Complete |
+| `v1.3.0` | Emergent Living World | Current |
 
 Detailed release notes are available under `docs/releases/`.
 
@@ -272,6 +278,23 @@ The core agent loop is:
 `Observe → Believe → Goal → Plan → Risk Check → Act/Review → Learn → Re-plan`
 
 See `docs/V1_2_2_AUTONOMOUS_LIVING_WORLD.md` for the complete capability map and API surface.
+
+## Emergent Living World v1.3.0
+
+`v1.3.0` connects civilization-level outcomes to durable world-state mutations.
+
+The evolution layer now realizes:
+
+- births and deaths as real Citizen entity changes
+- partnerships and separations as household mutations
+- hiring, layoffs, business creation, and business closure
+- government policy effects on real economic parameters
+- city development as new geography locations
+- crises as material effects on citizens and businesses
+- migration as real population movement
+- deterministic and idempotent monthly/yearly evolution boundaries
+
+The evolution state is available through `GET /api/v1/world/evolution`.
 
 ## Living Civilization v1.2.1
 

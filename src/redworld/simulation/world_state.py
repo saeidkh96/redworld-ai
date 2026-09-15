@@ -10,6 +10,7 @@ from redworld.domains.banking.service import BankingService
 from redworld.domains.civilization import CivilizationState
 from redworld.domains.commerce import CommerceService
 from redworld.domains.employment.service import EmploymentService
+from redworld.domains.evolution import EvolutionState
 from redworld.domains.geography import GeographyService
 from redworld.domains.households import Household
 from redworld.domains.life.progression import CitizenLifeProfile
@@ -45,3 +46,4 @@ class WorldState:
     autonomous_society: SocietyState = field(default_factory=SocietyState)
     civilization: CivilizationState = field(default_factory=CivilizationState)
     autonomous_world: AutonomousWorldState = field(default_factory=AutonomousWorldState)
+    evolution: EvolutionState = field(default_factory=EvolutionState)

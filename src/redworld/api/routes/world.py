@@ -13,6 +13,7 @@ from redworld.simulation.snapshot import (
     agent_snapshot,
     autonomous_world_snapshot,
     civilization_snapshot,
+    evolution_snapshot,
     live_snapshot,
     map_snapshot,
     world_summary,
@@ -148,8 +149,7 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
             "community_influence": round(profile.community_influence, 3),
             "experience_days": profile.experience_days,
             "history": [
-                {"year": e.year, "kind": e.kind, "summary": e.summary}
-                for e in profile.events[-10:]
+                {"year": e.year, "kind": e.kind, "summary": e.summary} for e in profile.events[-10:]
             ],
         },
     }
@@ -276,8 +276,8 @@ def get_human_review_queue(engine: EngineDependency) -> dict[str, object]:
 def resolve_human_review(
     review_id: str,
     engine: EngineDependency,
-    decision: Annotated[ApprovalStatus, Query()],
-    note: Annotated[str, Query()] = "",
+    decision: ApprovalStatus = Query(...),  # noqa: B008
+    note: str = Query(""),  # noqa: B008
 ) -> dict[str, object]:
     if review_id not in engine.world.autonomous_world.pending_reviews:
         raise HTTPException(status_code=404, detail="review not found")
@@ -346,6 +346,11 @@ def get_events(
             for event in events
         ]
     }
+
+
+@router.get("/evolution")
+def get_evolution(engine: EngineDependency) -> dict[str, object]:
+    return evolution_snapshot(engine.world)
 
 
 @router.websocket("/live")

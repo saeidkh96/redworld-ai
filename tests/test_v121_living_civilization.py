@@ -77,5 +77,5 @@ def test_v121_api_exposes_civilization_and_history() -> None:
     assert history.status_code == 200
     assert history.json()["total"] >= 1
     summary = client.get("/api/v1/world").json()
-    assert summary["version"] == "1.2.4"
+    assert summary["version"] == "1.3.0"
     assert "living_civilization" in summary

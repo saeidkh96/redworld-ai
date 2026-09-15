@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.2.4",
+        "version": "1.3.0",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
@@ -42,6 +42,20 @@ def world_summary(world: WorldState) -> dict[str, object]:
             "active_crises": len(world.civilization.crises.active),
             "history_events": len(world.civilization.history.records),
             "strategy": world.civilization.intelligence.strategy,
+        },
+        "world_evolution": {
+            "births_realized": world.evolution.births_realized,
+            "deaths_realized": world.evolution.deaths_realized,
+            "marriages_realized": world.evolution.marriages_realized,
+            "separations_realized": world.evolution.separations_realized,
+            "hires_realized": world.evolution.hires_realized,
+            "layoffs_realized": world.evolution.layoffs_realized,
+            "businesses_created": world.evolution.businesses_created,
+            "businesses_closed": world.evolution.businesses_closed,
+            "policies_applied": world.evolution.policies_applied,
+            "city_projects_realized": world.evolution.city_projects_realized,
+            "crises_triggered": world.evolution.crises_triggered,
+            "migrations_realized": world.evolution.migrations_realized,
         },
         "autonomous_world": {
             "enabled": world.autonomous_world.enabled,
@@ -250,7 +264,8 @@ def civilization_snapshot(world: WorldState) -> dict[str, object]:
             "average_skill": round(state.careers.average_skill, 3),
             "wage_index": round(state.careers.wage_index, 3),
             "career_ladder": {
-                key: round(value, 3) for key, value in state.careers.career_ladder.items()
+                key: round(value, 3)
+                for key, value in state.careers.career_ladder.items()
             },
             "class_distribution": {
                 key.value: round(value, 3)
@@ -456,4 +471,27 @@ def agent_snapshot(world: WorldState, agent_id: str) -> dict[str, object] | None
             }
             for memory in agent.memories[-16:]
         ],
+    }
+
+
+def evolution_snapshot(world: WorldState) -> dict[str, object]:
+    state = world.evolution
+    return {
+        "version": "1.3.0",
+        "entity_population": len(world.citizens),
+        "entity_businesses": len(world.businesses),
+        "entity_households": len(world.households),
+        "births_realized": state.births_realized,
+        "deaths_realized": state.deaths_realized,
+        "marriages_realized": state.marriages_realized,
+        "separations_realized": state.separations_realized,
+        "hires_realized": state.hires_realized,
+        "layoffs_realized": state.layoffs_realized,
+        "businesses_created": state.businesses_created,
+        "businesses_closed": state.businesses_closed,
+        "policies_applied": state.policies_applied,
+        "city_projects_realized": state.city_projects_realized,
+        "crises_triggered": state.crises_triggered,
+        "migrations_realized": state.migrations_realized,
+        "active_world_shocks": dict(state.active_shocks),
     }

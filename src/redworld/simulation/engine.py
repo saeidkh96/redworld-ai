@@ -9,6 +9,7 @@ from redworld.domains.businesses import BusinessService
 from redworld.domains.civilization import LivingCivilizationService
 from redworld.domains.decisions import DecisionService
 from redworld.domains.economy import refresh_economy_metrics
+from redworld.domains.evolution.service import WorldEvolutionService
 from redworld.domains.government import GovernmentService
 from redworld.domains.life.progression import CitizenLifeProfile, CitizenProgressionService
 from redworld.domains.life.service import LifeService
@@ -167,6 +168,8 @@ class SimulationEngine:
                     month=self.world.clock.month,
                     events=self.world.events,
                 )
+            if self.world.clock.day_of_month == 1:
+                WorldEvolutionService().monthly_economy(self.world)
             if self.world.clock.day_of_month == 1 and self.world.clock.month == 1:
                 civilization.yearly_update(
                     state=self.world.civilization,
@@ -177,6 +180,7 @@ class SimulationEngine:
                     month=self.world.clock.month,
                     events=self.world.events,
                 )
+                WorldEvolutionService().yearly_life_events(self.world)
         agent_service.update(
             state=self.world.autonomous_world,
             citizens=self.world.citizens,
