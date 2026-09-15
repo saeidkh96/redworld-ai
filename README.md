@@ -1,28 +1,16 @@
 # RedWorld AI
 
-```{=html}
 <p align="center">
-```
-`<img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="900">`{=html}
-```{=html}
+  <img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="900">
 </p>
-```
-```{=html}
-<p align="center">
-```
-`<strong>`{=html}SIMULATE · BUILD · DECIDE · EVOLVE`</strong>`{=html}
-```{=html}
-</p>
-```
-```{=html}
-<p align="center">
-```
-An autonomous living-world simulation platform for society, economy,
-institutions, and intelligent citizens.
-```{=html}
-</p>
-```
 
+<p align="center">
+  <strong>SIMULATE · BUILD · DECIDE · EVOLVE</strong>
+</p>
+
+<p align="center">
+  An autonomous living-world simulation platform for society, economy, institutions, and intelligent citizens.
+</p>
 ------------------------------------------------------------------------
 
 ## Overview
