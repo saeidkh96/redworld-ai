@@ -16,6 +16,7 @@ from redworld.simulation.snapshot import (
     evolution_snapshot,
     live_snapshot,
     map_snapshot,
+    self_evolving_snapshot,
     world_summary,
 )
 
@@ -351,6 +352,11 @@ def get_events(
 @router.get("/evolution")
 def get_evolution(engine: EngineDependency) -> dict[str, object]:
     return evolution_snapshot(engine.world)
+
+
+@router.get("/self-evolving")
+def get_self_evolving_world(engine: EngineDependency) -> dict[str, object]:
+    return self_evolving_snapshot(engine.world)
 
 
 @router.websocket("/live")

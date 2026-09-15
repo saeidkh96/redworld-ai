@@ -16,6 +16,7 @@ from redworld.domains.households import Household
 from redworld.domains.life.progression import CitizenLifeProfile
 from redworld.domains.memory import MemoryService
 from redworld.domains.planning import PlanningService
+from redworld.domains.self_evolving import SelfEvolvingState
 from redworld.domains.society import SocialGraph
 from redworld.domains.time import WorldClock
 
@@ -47,3 +48,4 @@ class WorldState:
     civilization: CivilizationState = field(default_factory=CivilizationState)
     autonomous_world: AutonomousWorldState = field(default_factory=AutonomousWorldState)
     evolution: EvolutionState = field(default_factory=EvolutionState)
+    self_evolving: SelfEvolvingState = field(default_factory=SelfEvolvingState)

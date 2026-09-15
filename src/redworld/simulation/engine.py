@@ -14,6 +14,7 @@ from redworld.domains.government import GovernmentService
 from redworld.domains.life.progression import CitizenLifeProfile, CitizenProgressionService
 from redworld.domains.life.service import LifeService
 from redworld.domains.mobility import MobilityService
+from redworld.domains.self_evolving import SelfEvolvingCivilizationService
 from redworld.simulation.world_state import WorldState
 
 
@@ -181,6 +182,7 @@ class SimulationEngine:
                     events=self.world.events,
                 )
                 WorldEvolutionService().yearly_life_events(self.world)
+        SelfEvolvingCivilizationService().update(self.world)
         agent_service.update(
             state=self.world.autonomous_world,
             citizens=self.world.citizens,
@@ -190,6 +192,7 @@ class SimulationEngine:
             civilization=self.world.civilization,
             tick=tick,
             events=self.world.events,
+            minds=self.world.self_evolving.minds,
         )
         refresh_economy_metrics(self.world)
         self.world.events.append(

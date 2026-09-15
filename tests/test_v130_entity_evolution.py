@@ -6,7 +6,7 @@ from redworld.simulation.snapshot import evolution_snapshot, world_summary
 
 def test_v130_world_reports_final_version_and_evolution_state() -> None:
     world = create_world(population=80, seed=130)
-    assert world_summary(world)["version"] == "1.3.0"
+    assert world_summary(world)["version"] == "1.4.0"
     snapshot = evolution_snapshot(world)
     assert snapshot["entity_population"] == 80
     assert snapshot["businesses_created"] == 0

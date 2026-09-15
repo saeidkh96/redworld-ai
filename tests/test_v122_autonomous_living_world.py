@@ -107,7 +107,7 @@ def test_autonomy_api_exposes_agents_and_human_review_queue() -> None:
     get_engine.cache_clear()
     client = TestClient(app)
     summary = client.get("/api/v1/world").json()
-    assert summary["version"] == "1.3.0"
+    assert summary["version"] == "1.4.0"
     assert summary["autonomous_world"]["agents"] == 1544
 
     autonomy = client.get("/api/v1/world/autonomy")

@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.3.0",
+        "version": "1.4.0",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
@@ -56,6 +56,13 @@ def world_summary(world: WorldState) -> dict[str, object]:
             "city_projects_realized": world.evolution.city_projects_realized,
             "crises_triggered": world.evolution.crises_triggered,
             "migrations_realized": world.evolution.migrations_realized,
+        },
+        "self_evolving_world": {
+            "citizen_minds": len(world.self_evolving.minds),
+            "social_ties": len(world.self_evolving.social_ties),
+            "causal_links": world.self_evolving.causal_links,
+            "emergent_events": world.self_evolving.emergent_events_created,
+            "adaptations": world.self_evolving.adaptations,
         },
         "autonomous_world": {
             "enabled": world.autonomous_world.enabled,
@@ -264,8 +271,7 @@ def civilization_snapshot(world: WorldState) -> dict[str, object]:
             "average_skill": round(state.careers.average_skill, 3),
             "wage_index": round(state.careers.wage_index, 3),
             "career_ladder": {
-                key: round(value, 3)
-                for key, value in state.careers.career_ladder.items()
+                key: round(value, 3) for key, value in state.careers.career_ladder.items()
             },
             "class_distribution": {
                 key.value: round(value, 3)
@@ -477,7 +483,7 @@ def agent_snapshot(world: WorldState, agent_id: str) -> dict[str, object] | None
 def evolution_snapshot(world: WorldState) -> dict[str, object]:
     state = world.evolution
     return {
-        "version": "1.3.0",
+        "version": "1.4.0",
         "entity_population": len(world.citizens),
         "entity_businesses": len(world.businesses),
         "entity_households": len(world.households),
@@ -495,3 +501,11 @@ def evolution_snapshot(world: WorldState) -> dict[str, object]:
         "migrations_realized": state.migrations_realized,
         "active_world_shocks": dict(state.active_shocks),
     }
+
+
+def self_evolving_snapshot(world: WorldState) -> dict[str, object]:
+    from redworld.domains.self_evolving import SelfEvolvingCivilizationService
+
+    service = SelfEvolvingCivilizationService()
+    service.bootstrap(world)
+    return service.snapshot(world)

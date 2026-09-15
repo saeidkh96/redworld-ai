@@ -7,6 +7,7 @@ from redworld.domain.entities import Business, Citizen
 from redworld.domains.autonomy import SocietyState
 from redworld.domains.civilization import CivilizationState
 from redworld.domains.life.progression import CitizenLifeProfile
+from redworld.domains.self_evolving.models import CitizenMind
 
 from .models import (
     ActionReview,
@@ -47,6 +48,7 @@ class AutonomousAgentService:
         society: SocietyState,
         tick: int,
         events: EventStore,
+        minds: dict[str, CitizenMind] | None = None,
     ) -> None:
         if state.initialized:
             self._sync_new_agents(state, citizens, businesses, society)
@@ -119,6 +121,7 @@ class AutonomousAgentService:
         civilization: CivilizationState,
         tick: int,
         events: EventStore,
+        minds: dict[str, CitizenMind] | None = None,
     ) -> None:
         if not state.enabled:
             return
@@ -141,7 +144,9 @@ class AutonomousAgentService:
             agent = state.agents[str(citizen.id)]
             profile = profiles.get(str(citizen.id))
             self._observe_citizen(agent, citizen, profile, society, civilization, tick)
-            self._refresh_citizen_goals(agent, citizen, profile, tick)
+            self._refresh_citizen_goals(
+                agent, citizen, profile, tick, None if minds is None else minds.get(str(citizen.id))
+            )
             self._ensure_plan(agent, tick, state)
             self._advance_plan(
                 state=state,
@@ -221,6 +226,7 @@ class AutonomousAgentService:
         citizen: Citizen,
         profile: CitizenLifeProfile | None,
         tick: int,
+        mind: CitizenMind | None = None,
     ) -> None:
         stress = profile.stress if profile else 0.35
         candidates = [
@@ -236,6 +242,17 @@ class AutonomousAgentService:
         ]
         if profile is not None and profile.skill < 0.60:
             candidates[-1].priority += 0.20
+        if mind is not None:
+            preferred = {
+                "stability": "financial_security",
+                "prosperity": "financial_security",
+                "community": "belonging",
+                "learning": "growth",
+                "mobility": "growth",
+            }.get(mind.goal)
+            for candidate in candidates:
+                if candidate.key == preferred:
+                    candidate.priority += 0.18 + mind.knowledge * 0.04
         candidates.sort(key=lambda goal: goal.priority, reverse=True)
         agent.goals = candidates[:3]
 
@@ -645,13 +662,11 @@ class AutonomousAgentService:
             0.70 * civilization.intelligence.citizen_adaptation
             + 0.30 * (0.55 * state.learning_index + 0.45 * state.emergence_index)
         )
-        organization_agents = [
-            agent for agent in agents if agent.kind != AgentKind.CITIZEN
-        ]
+        organization_agents = [agent for agent in agents if agent.kind != AgentKind.CITIZEN]
         if organization_agents:
-            organization_learning = sum(
-                1 for agent in organization_agents if agent.memories
-            ) / len(organization_agents)
+            organization_learning = sum(1 for agent in organization_agents if agent.memories) / len(
+                organization_agents
+            )
             civilization.intelligence.institution_adaptation = _clamp(
                 0.75 * civilization.intelligence.institution_adaptation
                 + 0.25 * organization_learning

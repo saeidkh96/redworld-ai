@@ -67,6 +67,7 @@ class AutonomousSocietyService:
         values = [profiles[str(c.id)] for c in citizens if str(c.id) in profiles]
         if not values:
             return
+
         def profile_mean(getter: Callable[[CitizenLifeProfile], float]) -> float:
             return sum(getter(profile) for profile in values) / len(values)
 
@@ -154,9 +155,7 @@ class AutonomousSocietyService:
             if state.education_index < state.public_health
             else "Strengthen public health and neighborhood support"
         )
-        state.decision_history.append(
-            CivicDecision(tick, title, state.civic_participation, True)
-        )
+        state.decision_history.append(CivicDecision(tick, title, state.civic_participation, True))
         del state.decision_history[:-50]
         events.append(
             DomainEvent(
