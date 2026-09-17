@@ -1,27 +1,16 @@
 # RedWorld AI
 
-```{=html}
 <p align="center">
-```
-`<img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="900">`{=html}
-```{=html}
+  <img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="900">
 </p>
-```
-```{=html}
+
 <p align="center">
-```
-`<strong>`{=html}SIMULATE → DECIDE → INTERACT → EVOLVE`</strong>`{=html}
-```{=html}
+  <strong>SIMULATE → DECIDE → INTERACT → EVOLVE</strong>
 </p>
-```
-```{=html}
+
 <p align="center">
-```
-An autonomous living-world simulation platform for society, economy,
-institutions, and intelligent citizens.
-```{=html}
+  An autonomous living-world simulation platform for society, economy, institutions, and intelligent citizens.
 </p>
-```
 
 ------------------------------------------------------------------------
 
@@ -503,19 +492,11 @@ Commercial use requires separate permission.
 
 ------------------------------------------------------------------------
 
-```{=html}
 <p align="center">
-```
-`<strong>`{=html}RedWorld AI`</strong>`{=html}`<br>`{=html} SIMULATE →
-DECIDE → INTERACT → EVOLVE
-```{=html}
+  <strong>RedWorld AI</strong><br>
+  SIMULATE → DECIDE → INTERACT → EVOLVE
 </p>
-```
-```{=html}
+
 <p align="center">
-```
-Created and developed by `<strong>`{=html}Saeid
-Khalilian`</strong>`{=html}
-```{=html}
+  Created and developed by <strong>Saeid Khalilian</strong>
 </p>
-```
