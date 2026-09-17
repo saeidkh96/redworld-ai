@@ -1,16 +1,28 @@
 # RedWorld AI
 
+```{=html}
 <p align="center">
-  <img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="900">
+```
+`<img src="assets/branding/redworld-logo.png" alt="RedWorld AI" width="900">`{=html}
+```{=html}
 </p>
+```
+```{=html}
+<p align="center">
+```
+`<strong>`{=html}SIMULATE → DECIDE → INTERACT → EVOLVE`</strong>`{=html}
+```{=html}
+</p>
+```
+```{=html}
+<p align="center">
+```
+An autonomous living-world simulation platform for society, economy,
+institutions, and intelligent citizens.
+```{=html}
+</p>
+```
 
-<p align="center">
-  <strong>SIMULATE · BUILD · DECIDE · EVOLVE</strong>
-</p>
-
-<p align="center">
-  An autonomous living-world simulation platform for society, economy, institutions, and intelligent citizens.
-</p>
 ------------------------------------------------------------------------
 
 ## Overview
@@ -25,13 +37,14 @@ itself remains the source of truth: citizens and future AI agents can
 propose actions, but all actions are validated and executed by world
 systems.
 
-`v1.4.0 — Self-Evolving Civilization` integrates citizen intelligence,
-social dynamics, market signals, institutional feedback, urban pressure,
-generational knowledge, causal history, emergent events, and adaptation
-into the live world. High-risk autonomous actions remain protected by
-Human-in-the-Loop review.
+`v2.0.0 — Living Digital World` extends the autonomous society into a
+deeper, long-running digital world. Citizen life arcs, persistent
+organizations, controlled urban expansion, causal history, and emergent
+world events now evolve alongside the existing society and economy.
+High-risk autonomous actions remain protected by Human-in-the-Loop
+review.
 
-## RedWorld AI v1.4.0
+## RedWorld AI v2.0.0
 
 The current world supports:
 
@@ -78,6 +91,18 @@ The current world supports:
 -   **Urban pressure → real geography** integration
 -   **Generational knowledge → citizen life profiles** integration
 -   **Emergent events and adaptation → observable world mutations**
+-   **Deep Citizen Life** with persistent life arcs and family,
+    education, and career transitions
+-   **Persistent Organizations** with business, institution, and
+    community profiles plus collective behavior
+-   **Controlled City Expansion** driven by world pressure and bounded
+    growth
+-   **Living World History** with causal timeline records for citizen,
+    organization, city, crisis, and continuity events
+-   **Long-running world evolution** designed for deterministic
+    multi-cycle simulation
+-   **Living Digital World API + timeline viewer** for inspecting the
+    evolving world
 
 ## Core Principles
 
@@ -111,6 +136,13 @@ Intelligence Layer
 ├── Goals, Beliefs & Memory
 ├── Risk Evaluation
 └── Human-in-the-Loop Review
+
+Living Digital World
+├── Deep Citizen Life
+├── Persistent Organizations
+├── Controlled City Expansion
+├── Causal World Timeline
+└── Long-Run Evolution
 
 Self-Evolving Civilization
 ├── Social Dynamics
@@ -173,6 +205,7 @@ src/redworld/
 │   ├── government/
 │   ├── households/
 │   ├── life/
+│   ├── living_world_v2/
 │   ├── memory/
 │   ├── mobility/
 │   ├── planning/
@@ -241,6 +274,8 @@ GET  /api/v1/world/history
 GET  /api/v1/world/events
 GET  /api/v1/world/evolution
 GET  /api/v1/world/self-evolving
+GET  /api/v1/world/living-digital-world
+GET  /api/v1/world/timeline?limit=100
 POST /api/v1/world/step
 WS   /api/v1/world/live
 ```
@@ -280,9 +315,11 @@ python -m mypy src
 Current validated development build:
 
 ``` text
-73 tests passed
+77 tests passed
 Ruff: All checks passed
-mypy: Success — 89 source files
+mypy: Success — 92 source files
+JavaScript syntax validation: passed
+Full simulated-year stability test: passed (35,040 ticks)
 ```
 
 ### Run
@@ -318,9 +355,36 @@ http://127.0.0.1:8000/viewer
   `v1.2.3`   Performance & Runtime Optimization       Complete
   `v1.2.4`   Real-Time Viewer & Smooth Motion         Complete
   `v1.3.0`   Emergent Living World                    Complete
-  `v1.4.0`   Self-Evolving Civilization               Current
+  `v1.4.0`   Self-Evolving Civilization               Complete
+  `v2.0.0`   Living Digital World                     Current
 
 Detailed release notes are available under `docs/releases/`.
+
+## Living Digital World v2.0.0
+
+`v2.0.0` is the current stable milestone of RedWorld AI. It integrates
+deeper citizen life, persistent organizations, controlled city growth,
+historical continuity, and long-running world evolution into the
+existing autonomous society and economy.
+
+A full simulated-year validation completed successfully:
+
+-   **35,040 simulation ticks**
+-   Population: **1,500 → 1,558**
+-   Businesses: **40 → 52**
+-   Organizations: **47 → 59**
+-   Family transitions: **16**
+-   Education transitions: **34**
+-   Career transitions: **803**
+-   Collective organizational actions: **113**
+-   Controlled city expansions: **13**
+-   Historical records: **130**
+-   Emergent crises: **1**
+-   Human-in-the-Loop authority preserved
+
+The v2 world state is available through
+`GET /api/v1/world/living-digital-world`, while causal world history is
+available through `GET /api/v1/world/timeline?limit=100`.
 
 ## Autonomous Living World v1.2.2
 
@@ -392,7 +456,7 @@ transitions, careers and social mobility, dynamic macroeconomics,
 elections and policy, social pressure, city development, crises, causal
 history and adaptive civilization strategy.
 
-The scope remains extensible: future releases can expand these systems
+The scope remains extensible: post-v2 releases can expand these systems
 into richer multi-city, regional and world-scale simulations without
 replacing the current foundations.
 
@@ -439,11 +503,19 @@ Commercial use requires separate permission.
 
 ------------------------------------------------------------------------
 
+```{=html}
 <p align="center">
-  <strong>RedWorld AI</strong><br>
-  SIMULATE · BUILD · DECIDE · EVOLVE
+```
+`<strong>`{=html}RedWorld AI`</strong>`{=html}`<br>`{=html} SIMULATE →
+DECIDE → INTERACT → EVOLVE
+```{=html}
 </p>
-
+```
+```{=html}
 <p align="center">
-  Created and developed by <strong>Saeid Khalilian</strong>
+```
+Created and developed by `<strong>`{=html}Saeid
+Khalilian`</strong>`{=html}
+```{=html}
 </p>
+```
