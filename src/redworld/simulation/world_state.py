@@ -14,6 +14,7 @@ from redworld.domains.evolution import EvolutionState
 from redworld.domains.geography import GeographyService
 from redworld.domains.households import Household
 from redworld.domains.life.progression import CitizenLifeProfile
+from redworld.domains.living_world_v2 import LivingDigitalWorldState
 from redworld.domains.memory import MemoryService
 from redworld.domains.planning import PlanningService
 from redworld.domains.self_evolving import SelfEvolvingState
@@ -49,3 +50,4 @@ class WorldState:
     autonomous_world: AutonomousWorldState = field(default_factory=AutonomousWorldState)
     evolution: EvolutionState = field(default_factory=EvolutionState)
     self_evolving: SelfEvolvingState = field(default_factory=SelfEvolvingState)
+    living_world_v2: LivingDigitalWorldState = field(default_factory=LivingDigitalWorldState)

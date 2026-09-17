@@ -10,7 +10,7 @@ def world_summary(world: WorldState) -> dict[str, object]:
     employed = sum(1 for citizen in world.citizens.values() if citizen.employed)
     return {
         "name": world.name,
-        "version": "1.4.0",
+        "version": "2.0.0",
         "tick": world.tick,
         "time": world.clock.label,
         "day": world.clock.day,
@@ -509,3 +509,33 @@ def self_evolving_snapshot(world: WorldState) -> dict[str, object]:
     service = SelfEvolvingCivilizationService()
     service.bootstrap(world)
     return service.snapshot(world)
+
+
+def living_digital_world_snapshot(world: WorldState) -> dict[str, object]:
+    from redworld.domains.living_world_v2 import LivingDigitalWorldService
+
+    service = LivingDigitalWorldService()
+    service.bootstrap(world)
+    world.living_world_v2.world_inspections += 1
+    return service.snapshot(world)
+
+
+def world_timeline_snapshot(world: WorldState, limit: int = 100) -> dict[str, object]:
+    records = world.living_world_v2.timeline[-limit:]
+    return {
+        "total": len(world.living_world_v2.timeline),
+        "items": [
+            {
+                "sequence": r.sequence,
+                "tick": r.tick,
+                "year": r.year,
+                "month": r.month,
+                "category": r.category,
+                "title": r.title,
+                "cause": r.cause,
+                "effect": r.effect,
+                "significance": round(r.significance, 3),
+            }
+            for r in records
+        ],
+    }

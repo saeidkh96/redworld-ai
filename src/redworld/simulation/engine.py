@@ -13,6 +13,7 @@ from redworld.domains.evolution.service import WorldEvolutionService
 from redworld.domains.government import GovernmentService
 from redworld.domains.life.progression import CitizenLifeProfile, CitizenProgressionService
 from redworld.domains.life.service import LifeService
+from redworld.domains.living_world_v2 import LivingDigitalWorldService
 from redworld.domains.mobility import MobilityService
 from redworld.domains.self_evolving import SelfEvolvingCivilizationService
 from redworld.simulation.world_state import WorldState
@@ -58,6 +59,9 @@ class SimulationEngine:
             tick=self.world.tick,
             events=self.world.events,
         )
+
+        SelfEvolvingCivilizationService().bootstrap(self.world)
+        LivingDigitalWorldService().bootstrap(self.world)
 
     def step(self) -> WorldState:
         if self.world.geography.locations:
@@ -183,6 +187,7 @@ class SimulationEngine:
                 )
                 WorldEvolutionService().yearly_life_events(self.world)
         SelfEvolvingCivilizationService().update(self.world)
+        LivingDigitalWorldService().update(self.world)
         agent_service.update(
             state=self.world.autonomous_world,
             citizens=self.world.citizens,

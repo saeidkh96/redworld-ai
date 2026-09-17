@@ -1816,6 +1816,13 @@ async function loadAutonomy(){
   queue.innerHTML=items.length?items.map(r=>`<div class="review-card"><span class="risk">${r.risk_level.toUpperCase()} · ${(r.risk_score*100).toFixed(0)}%</span><b>${r.agent_name} → ${r.intent.replaceAll("_"," ")}</b><p>${r.expected_impact}</p><div class="review-actions"><button class="approve" data-review="${r.id}" data-decision="approved">APPROVE</button><button class="modify" data-review="${r.id}" data-decision="modified">MODIFY</button><button class="reject" data-review="${r.id}" data-decision="rejected">REJECT</button></div></div>`).join(""):'<div class="empty-state">No high-risk actions waiting for review.</div>';
   queue.querySelectorAll("button[data-review]").forEach(button=>{button.onclick=async()=>{const id=button.dataset.review;const decision=button.dataset.decision;await fetch(`/api/v1/world/autonomy/reviews/${id}?decision=${decision}`,{method:"POST"});await loadAutonomy();await refresh();};});
 }
+async function loadTimeline(){
+  const response=await fetch("/api/v1/world/timeline?limit=12");
+  const data=await response.json();
+  const items=data.items||[];
+  document.getElementById("timelineCount").textContent=data.total||0;
+  document.getElementById("timeline").innerHTML=items.length?[...items].reverse().map(r=>`<div class="event"><span class="tick">Y${r.year} M${r.month}</span><b>${r.title}</b><small>${r.cause} → ${r.effect}</small></div>`).join(""):'<div class="empty-state">History will emerge as the world evolves.</div>';
+}
 async function refresh(){
   const response = await fetch("/api/v1/world/map?render_sample=120");
   const nextSnapshot = await response.json();
@@ -1840,6 +1847,7 @@ async function refresh(){
   await Promise.all([
     loadEvents(),
     loadAutonomy(),
+    loadTimeline(),
   ]);
 }
 async function stepWorld(){await fetch("/api/v1/world/step?steps=1",{method:"POST"});await refresh();}

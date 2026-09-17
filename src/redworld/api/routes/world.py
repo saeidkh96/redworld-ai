@@ -15,9 +15,11 @@ from redworld.simulation.snapshot import (
     civilization_snapshot,
     evolution_snapshot,
     live_snapshot,
+    living_digital_world_snapshot,
     map_snapshot,
     self_evolving_snapshot,
     world_summary,
+    world_timeline_snapshot,
 )
 
 router = APIRouter(prefix="/world", tags=["world"])
@@ -93,6 +95,7 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
         else str(engine.world.ledger.balance(citizen.cash_account_id))
     )
     profile = engine.world.life_profiles.get(str(citizen.id))
+    arc = engine.world.living_world_v2.citizen_arcs.get(str(citizen.id))
     return {
         "id": str(citizen.id),
         "name": citizen.name,
@@ -124,6 +127,17 @@ def get_citizen(citizen_id: str, engine: EngineDependency) -> dict[str, object]:
             for memory in engine.world.memories.recent(citizen.id)
         ],
         "relationships": len(engine.world.society.for_citizen(citizen.id)),
+        "living_world_v2": None
+        if arc is None
+        else {
+            "family_role": arc.family_role,
+            "education_stage": arc.education_stage,
+            "career_level": arc.career_level,
+            "personality_depth": round(arc.personality_depth, 3),
+            "memory_depth": round(arc.memory_depth, 3),
+            "legacy_knowledge": round(arc.legacy_knowledge, 3),
+            "life_transitions": arc.life_transitions,
+        },
         "autonomous_agent": agent_snapshot(engine.world, str(citizen.id)),
         "life": None
         if profile is None
@@ -357,6 +371,19 @@ def get_evolution(engine: EngineDependency) -> dict[str, object]:
 @router.get("/self-evolving")
 def get_self_evolving_world(engine: EngineDependency) -> dict[str, object]:
     return self_evolving_snapshot(engine.world)
+
+
+@router.get("/living-digital-world")
+def get_living_digital_world(engine: EngineDependency) -> dict[str, object]:
+    return living_digital_world_snapshot(engine.world)
+
+
+@router.get("/timeline")
+def get_world_timeline(
+    engine: EngineDependency,
+    limit: int = Query(100, ge=1, le=1000),
+) -> dict[str, object]:
+    return world_timeline_snapshot(engine.world, limit)
 
 
 @router.websocket("/live")
